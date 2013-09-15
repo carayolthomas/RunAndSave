@@ -26,22 +26,35 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		this.addGPSLocationListener();
+		this.addWifiLocationListener();
+		this.addDisplayCacheListener();
+		this.addRecordLocationListener();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+
+		return true;
+	}
+
+	private void addDisplayCacheListener() {
 		findViewById(R.id.display).setOnClickListener(
 				new View.OnClickListener() {
 					public void onClick(View view) {
 						if (!isStart) {
 							FileInputStream fis;
 							try {
-								
+
 								fis = openFileInput(FILENAME);
 
 								String str = "";
 								byte[] buffer = new byte[256];
-								int offset = 0;
 								int nbOctet = fis.read(buffer);
-								
-								while(nbOctet != -1) {
-									offset += nbOctet;
+
+								while (nbOctet != -1) {
 									str += new String(buffer);
 									buffer = new byte[256];
 									nbOctet = fis.read(buffer);
@@ -56,8 +69,7 @@ public class MainActivity extends Activity {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							
-							
+
 						} else {
 							Toast.makeText(getApplicationContext(),
 									"Stop recording first!", Toast.LENGTH_LONG)
@@ -65,6 +77,9 @@ public class MainActivity extends Activity {
 						}
 					}
 				});
+	}
+
+	private void addRecordLocationListener() {
 		findViewById(R.id.cache).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				if (isStart) {
@@ -79,7 +94,7 @@ public class MainActivity extends Activity {
 					isStart = false;
 				} else {
 					try {
-						fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+						fos = openFileOutput(FILENAME, Context.MODE_APPEND);
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -90,7 +105,9 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
+	}
 
+	private void addGPSLocationListener() {
 		findViewById(R.id.gpsPosition).setOnClickListener(
 				new View.OnClickListener() {
 					public void onClick(View view) {
@@ -113,8 +130,10 @@ public class MainActivity extends Activity {
 												+ MyLocationListener.latitudeGPS
 												+ ","
 												+ MyLocationListener.longitudeGPS
-												+ " - " + MyLocationListener.location
-												.getTime()+"\n").getBytes());
+												+ " - "
+												+ MyLocationListener.location
+														.getTime() + "\n")
+												.getBytes());
 									} catch (IOException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -143,7 +162,9 @@ public class MainActivity extends Activity {
 
 					}
 				});
+	}
 
+	private void addWifiLocationListener() {
 		findViewById(R.id.wifiPosition).setOnClickListener(
 				new View.OnClickListener() {
 					public void onClick(View view) {
@@ -165,8 +186,10 @@ public class MainActivity extends Activity {
 												+ MyLocationListener.latitudeWifi
 												+ ","
 												+ MyLocationListener.longitudeWifi
-												+ " - " + MyLocationListener.location
-												.getTime()+"\n").getBytes());
+												+ " - "
+												+ MyLocationListener.location
+														.getTime() + "\n")
+												.getBytes());
 									} catch (IOException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -195,14 +218,6 @@ public class MainActivity extends Activity {
 
 					}
 				});
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-
-		return true;
 	}
 
 }
