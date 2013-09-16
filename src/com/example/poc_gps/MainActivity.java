@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
 
 	private void startMapActivity() {
 		Intent intent = new Intent(this, DisplayMapActivity.class);
-		intent.putExtra(MainActivity.RIDE_NUMBER_MAP, 0);
+		intent.putExtra(MainActivity.RIDE_NUMBER_MAP, "0");
 		startActivity(intent);
 	}
 

@@ -28,10 +28,9 @@ public class DisplayMapActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.maps_layout);
 
-		int offsetToTest = 10;
-		
 		Intent intent = getIntent();
-		int rideNumber = Integer.parseInt(intent.getStringExtra(MainActivity.RIDE_NUMBER_MAP));
+		int rideNumber = Integer.parseInt(intent
+				.getStringExtra(MainActivity.RIDE_NUMBER_MAP));
 		// Open cache files
 		Reader readerGPS = JsonManager.openReader(MainActivity.FILENAMEGPS,
 				this);
@@ -63,7 +62,6 @@ public class DisplayMapActivity extends FragmentActivity {
 		int i;
 		// create the route line
 		for (i = 0; i < gpsWaypoints.size(); i++) {
-			offsetToTest = i;
 			WayPoint wpt = null;
 			if (gpsWaypoints.get(i).lat != null) {
 				wpt = gpsWaypoints.get(i);
@@ -83,8 +81,7 @@ public class DisplayMapActivity extends FragmentActivity {
 							.icon(BitmapDescriptorFactory
 									.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 				}
-				lineOptions.add(new LatLng(wpt.lat + offsetToTest, wpt.lng
-						+ offsetToTest));
+				lineOptions.add(new LatLng(wpt.lat, wpt.lng));
 			}
 		}
 
@@ -92,7 +89,6 @@ public class DisplayMapActivity extends FragmentActivity {
 		WayPoint wpt = null;
 		while (wpt == null) {
 			i--;
-			offsetToTest = i;
 			if (gpsWaypoints.get(i).lat != null) {
 				wpt = gpsWaypoints.get(i);
 
@@ -103,9 +99,7 @@ public class DisplayMapActivity extends FragmentActivity {
 			}
 		}
 		map.addMarker(new MarkerOptions()
-				.position(
-						new LatLng(wpt.lat + offsetToTest, wpt.lng
-								+ offsetToTest))
+				.position(new LatLng(wpt.lat, wpt.lng))
 				.title("Finish: " + new Date(wpt.timestamp))
 				.icon(BitmapDescriptorFactory
 						.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
