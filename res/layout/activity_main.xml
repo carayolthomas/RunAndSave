@@ -9,35 +9,52 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/gpsPosition"
+        android:id="@+id/displayGPSCache"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:text="@string/messageGPS" />
-
-    <Button
-        android:id="@+id/wifiPosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/gpsPosition"
-        android:layout_alignLeft="@+id/gpsPosition"
-        android:text="@string/messageWifi" />
+        android:text="Display GPS cache" />
 
     <Button
         android:id="@+id/cache"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/wifiPosition"
-        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/displayGPSCache"
+        android:layout_alignParentLeft="true"
         android:text="@string/messageCache" />
 
     <Button
-        android:id="@+id/display"
+        android:id="@+id/cleanWifiCache"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/gpsPosition"
-        android:layout_centerHorizontal="true"
-        android:text="@string/messageDisplay" />
+        android:layout_above="@+id/cache"
+        android:layout_alignLeft="@+id/cache"
+        android:text="Clean wifi cache" />
+
+    <Button
+        android:id="@+id/cleanGPSCache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/cleanWifiCache"
+        android:layout_alignLeft="@+id/cleanWifiCache"
+        android:text="Clean GPS cache" />
+
+    <Button
+        android:id="@+id/displayWifiCache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/displayGPSCache"
+        android:layout_below="@+id/displayGPSCache"
+        android:text="Display Wifi cache" />
+
+    <Button
+        android:id="@+id/displayMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/cleanGPSCache"
+        android:layout_marginBottom="46dp"
+        android:text="Display cache map " />
 
 </RelativeLayout>
