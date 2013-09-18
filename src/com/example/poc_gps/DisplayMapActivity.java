@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -45,7 +47,7 @@ public class DisplayMapActivity extends FragmentActivity {
 
 		// Getting Map for the SupportMapFragment
 		map = fm.getMap();
-
+		
 		// Enable MyLocation Button in the Map
 		map.setMyLocationEnabled(true);
 
@@ -54,20 +56,30 @@ public class DisplayMapActivity extends FragmentActivity {
 		SearchJSONResult wifiResults = JsonManager.getAllRides(
 				MainActivity.FILENAMEWIFI, readerWifi);
 
-		List<WayPoint> gpsWaypoints = gpsResults.rides.get(rideNumber).wayPoints;
-		List<WayPoint> wifiWaypoints = wifiResults.rides.get(rideNumber).wayPoints;
+		List<WayPoint> gpsWaypoints = null;
 
+		List<WayPoint> wifiWaypoints = null;
+		try {
+			gpsWaypoints = gpsResults.rides.get(rideNumber).wayPoints;
+		} catch (Exception e) {
+		}
+		try {
+			wifiWaypoints = wifiResults.rides.get(rideNumber).wayPoints;
+		} catch (Exception e) {
+		}
+		
 		PolylineOptions lineOptions = new PolylineOptions();
 		boolean startPointIsSet = false;
 		int i;
+		int size = gpsWaypoints == null ? (wifiWaypoints == null ? 0 : wifiWaypoints.size()) : gpsWaypoints.size();
 		// create the route line
-		for (i = 0; i < gpsWaypoints.size(); i++) {
+		for (i = 0; i < size; i++) {
 			WayPoint wpt = null;
-			if (gpsWaypoints.get(i).lat != null) {
+			if (gpsWaypoints != null && gpsWaypoints.get(i).lat != null) {
 				wpt = gpsWaypoints.get(i);
 
 			} else {
-				if (wifiWaypoints.get(i).lat != null) {
+				if (wifiWaypoints != null && wifiWaypoints.get(i).lat != null) {
 					wpt = wifiWaypoints.get(i);
 				}
 			}
@@ -75,6 +87,12 @@ public class DisplayMapActivity extends FragmentActivity {
 				// add the start marker
 				if (!startPointIsSet) {
 					startPointIsSet = true;
+					CameraPosition cameraPosition = new CameraPosition.Builder()
+				    .target(new LatLng(wpt.lat, wpt.lng))      // Sets the center of the map to the start point
+				    .zoom(17)                   // Sets the zoom
+				    .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+				    .build();                   // Creates a CameraPosition from the builder
+					map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 					map.addMarker(new MarkerOptions()
 							.position(new LatLng(wpt.lat, wpt.lng))
 							.title("Start: " + new Date(wpt.timestamp))
@@ -89,20 +107,22 @@ public class DisplayMapActivity extends FragmentActivity {
 		WayPoint wpt = null;
 		while (wpt == null) {
 			i--;
-			if (gpsWaypoints.get(i).lat != null) {
+			if (gpsWaypoints != null && gpsWaypoints.get(i).lat != null) {
 				wpt = gpsWaypoints.get(i);
 
 			} else {
-				if (wifiWaypoints.get(i).lat != null) {
+				if (wifiWaypoints != null && wifiWaypoints.get(i).lat != null) {
 					wpt = wifiWaypoints.get(i);
 				}
 			}
 		}
-		map.addMarker(new MarkerOptions()
+		if(wpt != null) {
+			map.addMarker(new MarkerOptions()
 				.position(new LatLng(wpt.lat, wpt.lng))
 				.title("Finish: " + new Date(wpt.timestamp))
 				.icon(BitmapDescriptorFactory
 						.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+		}
 		// Trace the route
 		lineOptions.width(2).color(Color.RED);
 		map.addPolyline(lineOptions);
