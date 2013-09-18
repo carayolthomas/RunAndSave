@@ -120,4 +120,12 @@ public class JsonManager {
 		Gson gson = new Gson();
 		return gson.fromJson(reader, SearchJSONResult.class);
 	}
+	
+	public static int getNumberOfRides(Context context) {
+		Gson gson = new Gson();
+		//Subjective choice in the filenale, we could open the wifi file or create only 1 file
+		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS,
+				context);
+		return gson.fromJson(reader, SearchJSONResult.class).nbRides;
+	}
 }

@@ -17,10 +17,11 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	public static int nbRides = 0;
+	public static Integer nbRides = null;
 	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
 	
 	private static boolean isStart = false;
@@ -36,6 +37,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		nbRides = JsonManager.getNumberOfRides(this);
 		m_handler = new Handler();
 		this.cleanGPSCacheListener();
 		this.cleanWifiCacheListener();
@@ -53,7 +55,9 @@ public class MainActivity extends Activity {
 
 	private void startMapActivity() {
 		Intent intent = new Intent(this, DisplayMapActivity.class);
-		intent.putExtra(MainActivity.RIDE_NUMBER_MAP, "0");
+		String rideToDisplay = ((EditText)findViewById(R.id.rideToDisplay)).getText().toString();
+		System.out.println(rideToDisplay);
+		intent.putExtra(MainActivity.RIDE_NUMBER_MAP, rideToDisplay);
 		startActivity(intent);
 	}
 
