@@ -70,4 +70,14 @@
         <requestFocus />
     </EditText>
 
+    <EditText
+        android:id="@+id/sampleTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:inputType="number"
+        android:text="5" />
+
 </RelativeLayout>
