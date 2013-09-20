@@ -33,32 +33,36 @@ public class DisplayMapActivity extends FragmentActivity {
 		Intent intent = getIntent();
 		int rideNumber = Integer.parseInt(intent
 				.getStringExtra(MainActivity.RIDE_NUMBER_MAP));
+
 		// Open cache files
 		Reader readerGPS = JsonManager.openReader(MainActivity.FILENAMEGPS,
 				this);
 		Reader readerWifi = JsonManager.openReader(MainActivity.FILENAMEWIFI,
 				this);
-		// Initializing
-		markerPoints = new ArrayList<LatLng>();
-
+		// get the rides in cache
+		SearchJSONResult gpsResults = JsonManager.getAllRides(readerGPS);
+		SearchJSONResult wifiResults = JsonManager.getAllRides(readerWifi);
+		List<WayPoint> gpsWaypoints = null;
+		List<WayPoint> wifiWaypoints = null;
 		// Getting reference to SupportMapFragment of the activity_main
 		SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map);
+		//The line composed by the waypoints
+		PolylineOptions lineOptions = new PolylineOptions();
+		//to check if we already set the 1st waypoints
+		boolean startPointIsSet = false;
+		int i, size;
+		
+		// Initializing
+		markerPoints = new ArrayList<LatLng>();
 
 		// Getting Map for the SupportMapFragment
 		map = fm.getMap();
-		
+
 		// Enable MyLocation Button in the Map
 		map.setMyLocationEnabled(true);
 
-		SearchJSONResult gpsResults = JsonManager.getAllRides(
-				MainActivity.FILENAMEGPS, readerGPS);
-		SearchJSONResult wifiResults = JsonManager.getAllRides(
-				MainActivity.FILENAMEWIFI, readerWifi);
-
-		List<WayPoint> gpsWaypoints = null;
-
-		List<WayPoint> wifiWaypoints = null;
+		//Get a the waypoints of the ride to display
 		try {
 			gpsWaypoints = gpsResults.rides.get(rideNumber).wayPoints;
 		} catch (Exception e) {
@@ -67,11 +71,9 @@ public class DisplayMapActivity extends FragmentActivity {
 			wifiWaypoints = wifiResults.rides.get(rideNumber).wayPoints;
 		} catch (Exception e) {
 		}
-		
-		PolylineOptions lineOptions = new PolylineOptions();
-		boolean startPointIsSet = false;
-		int i;
-		int size = gpsWaypoints == null ? (wifiWaypoints == null ? 0 : wifiWaypoints.size()) : gpsWaypoints.size();
+
+		size = gpsWaypoints == null ? (wifiWaypoints == null ? 0
+				: wifiWaypoints.size()) : gpsWaypoints.size();
 		// create the route line
 		for (i = 0; i < size; i++) {
 			WayPoint wpt = null;
@@ -88,11 +90,19 @@ public class DisplayMapActivity extends FragmentActivity {
 				if (!startPointIsSet) {
 					startPointIsSet = true;
 					CameraPosition cameraPosition = new CameraPosition.Builder()
-				    .target(new LatLng(wpt.lat, wpt.lng))      // Sets the center of the map to the start point
-				    .zoom(17)                   // Sets the zoom
-				    .tilt(30)                   // Sets the tilt of the camera to 30 degrees
-				    .build();                   // Creates a CameraPosition from the builder
-					map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+							.target(new LatLng(wpt.lat, wpt.lng)) // Sets the
+																	// center of
+																	// the map
+																	// to the
+																	// start
+																	// point
+							.zoom(17) // Sets the zoom
+							.tilt(30) // Sets the tilt of the camera to 30
+										// degrees
+							.build(); // Creates a CameraPosition from the
+										// builder
+					map.animateCamera(CameraUpdateFactory
+							.newCameraPosition(cameraPosition));
 					map.addMarker(new MarkerOptions()
 							.position(new LatLng(wpt.lat, wpt.lng))
 							.title("Start: " + new Date(wpt.timestamp))
@@ -105,7 +115,7 @@ public class DisplayMapActivity extends FragmentActivity {
 
 		// add the end marker
 		WayPoint wpt = null;
-		while (wpt == null) {
+		while (wpt == null && i >= 0) {
 			i--;
 			if (gpsWaypoints != null && gpsWaypoints.get(i).lat != null) {
 				wpt = gpsWaypoints.get(i);
@@ -116,12 +126,12 @@ public class DisplayMapActivity extends FragmentActivity {
 				}
 			}
 		}
-		if(wpt != null) {
+		if (wpt != null) {
 			map.addMarker(new MarkerOptions()
-				.position(new LatLng(wpt.lat, wpt.lng))
-				.title("Finish: " + new Date(wpt.timestamp))
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+					.position(new LatLng(wpt.lat, wpt.lng))
+					.title("Finish: " + new Date(wpt.timestamp))
+					.icon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 		}
 		// Trace the route
 		lineOptions.width(2).color(Color.RED);

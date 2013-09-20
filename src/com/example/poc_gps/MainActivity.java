@@ -2,9 +2,9 @@ package com.example.poc_gps;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,16 +21,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	public static Integer nbRides = null;
+	public static final int BUFFERSIZE = 10;
 	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
-	
-	private static boolean isStart = false;
 	public static final String FILENAMEGPS = "cacheGPS.json";
 	public static final String FILENAMEWIFI = "cacheWifi.json";
+
+	public static Integer nbRides = null;
+	private static boolean isStart = false;
+
 	private int m_interval = 5000; // 5 seconds by default, can be changed later
 	private Handler m_handler;
-	private ArrayList<WayPoint> gpsWayPoints;
-	private ArrayList<WayPoint> wifiWayPoints;
+	private Vector<WayPoint> gpsWayPoints;
+	private Vector<WayPoint> wifiWayPoints;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,9 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		nbRides = JsonManager.getNumberOfRides(this);
+		nbRides = nbRides == 0 ? 0 : nbRides + 1;
 		m_handler = new Handler();
+
 		this.cleanGPSCacheListener();
 		this.cleanWifiCacheListener();
 		this.addDisplayCacheListener();
@@ -55,8 +59,8 @@ public class MainActivity extends Activity {
 
 	private void startMapActivity() {
 		Intent intent = new Intent(this, DisplayMapActivity.class);
-		String rideToDisplay = ((EditText)findViewById(R.id.rideToDisplay)).getText().toString();
-		System.out.println(rideToDisplay);
+		String rideToDisplay = ((EditText) findViewById(R.id.rideToDisplay))
+				.getText().toString();
 		intent.putExtra(MainActivity.RIDE_NUMBER_MAP, rideToDisplay);
 		startActivity(intent);
 	}
@@ -71,6 +75,9 @@ public class MainActivity extends Activity {
 
 	/*
 	 * Cache tasks
+	 */
+	/**
+	 * Add the listener on the buttons 'displayGPSCache' and 'displayWifiCache'
 	 */
 	private void addDisplayCacheListener() {
 		findViewById(R.id.displayGPSCache).setOnClickListener(
@@ -87,7 +94,10 @@ public class MainActivity extends Activity {
 					}
 				});
 	}
-	
+
+	/**
+	 * Add the listener on the button 'cleanGPSCache'
+	 */
 	private void cleanGPSCacheListener() {
 		findViewById(R.id.cleanGPSCache).setOnClickListener(
 				new View.OnClickListener() {
@@ -98,6 +108,9 @@ public class MainActivity extends Activity {
 
 	}
 
+	/**
+	 * Add the listener on the button 'cleanWifiCache'
+	 */
 	private void cleanWifiCacheListener() {
 		findViewById(R.id.cleanWifiCache).setOnClickListener(
 				new View.OnClickListener() {
@@ -107,34 +120,46 @@ public class MainActivity extends Activity {
 				});
 	}
 
+	/**
+	 * Display the content of a file in cache
+	 * 
+	 * @param cacheFilename
+	 *            the file in cache to display
+	 */
 	private void displayCache(String cacheFilename) {
+		// Dsiplay the cache only if the tracking is off
 		if (!isStart) {
 			try {
-				String str = "";
+				String content = "";
 				Reader reader = JsonManager.openReader(cacheFilename, this);
-				SearchJSONResult ridesSearchResult = JsonManager.getJSON(cacheFilename,
-						reader, cacheFilename.equalsIgnoreCase(MainActivity.FILENAMEGPS) ? this.gpsWayPoints : this.wifiWayPoints);
+				SearchJSONResult ridesSearchResult = JsonManager
+						.getAllRides(reader);
 				List<Ride> rides = ridesSearchResult.rides;
+
+				// get the content
 				if (rides != null && rides.size() > 0) {
 
 					for (int i = 0; i < rides.size(); i++) {
 						Ride ride = rides.get(i);
-						str += "Ride : " + ride.rideNumber + "\n";
+						content += "Ride : " + ride.rideNumber + "\n";
 
 						for (int j = 0; j < ride.wayPoints.size(); j++) {
-							str += "\t" + ride.wayPoints.get(j).lat + ";"
+							content += "\t" + ride.wayPoints.get(j).lat + ";"
 									+ ride.wayPoints.get(j).lng + " at "
 									+ new Date(ride.wayPoints.get(j).timestamp)
 									+ "\n";
 						}
-						str += "----\n";
+						content += "----\n";
 					}
+				} else {
+					content = "No ride.";
 				}
 				reader.close();
+				// Display the content
 				AlertDialog.Builder alert = new AlertDialog.Builder(
 						MainActivity.this);
 				alert.setTitle("Cache");
-				alert.setMessage(str);
+				alert.setMessage(content);
 				alert.setPositiveButton("OK", null);
 				alert.show();
 			} catch (IOException e) {
@@ -153,22 +178,37 @@ public class MainActivity extends Activity {
 	/*
 	 * Location tasks
 	 */
+	/**
+	 * Add a listener on the button 'cache' which enable the tracking
+	 */
 	private void addRecordLocationListener() {
 		findViewById(R.id.cache).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				if (isStart) {
 					// flush the buffered waypoints
-					JsonManager.JSONToCache(MainActivity.FILENAMEGPS, gpsWayPoints, getApplicationContext());
-					JsonManager.JSONToCache(MainActivity.FILENAMEWIFI, wifiWayPoints, getApplicationContext());
+					JsonManager.addWaypointsToRide(MainActivity.FILENAMEGPS,
+							gpsWayPoints, getApplicationContext(),
+							MainActivity.nbRides);
+					JsonManager.addWaypointsToRide(MainActivity.FILENAMEWIFI,
+							wifiWayPoints, getApplicationContext(),
+							MainActivity.nbRides);
 					// change message
 					Button mButton = (Button) findViewById(R.id.cache);
 					mButton.setText("Start recording position when click");
 					MainActivity.isStart = false;
-					stopRepeatingTask();
 					MainActivity.nbRides++;
+					stopRepeatingTask();
 				} else {
-					gpsWayPoints = new ArrayList<WayPoint>();
-					wifiWayPoints = new ArrayList<WayPoint>();
+					try {
+						m_interval = Integer
+								.parseInt(((EditText) findViewById(R.id.sampleTime))
+										.getText().toString()) * 1000;
+					} catch (Exception e) {
+						m_interval = 5000;
+					}
+
+					gpsWayPoints = new Vector<WayPoint>();
+					wifiWayPoints = new Vector<WayPoint>();
 					MainActivity.isStart = true;
 					startRepeatingTask();
 					Button mButton = (Button) findViewById(R.id.cache);
@@ -178,7 +218,10 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	private void addGPSLocation() {
+	/**
+	 * Track the location of the phone through the GPS
+	 */
+	private void trackGPSLocation() {
 
 		/*
 		 * put that before otherwise the first click is initialising the
@@ -189,8 +232,8 @@ public class MainActivity extends Activity {
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mlocListener = new MyLocationListener(LocationManager.GPS_PROVIDER);
 		// every 5 seconds
-		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000,
-				0, mlocListener);
+		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				m_interval, 0, mlocListener);
 		/* */
 		if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			if (MyLocationListener.latitudeGPS > 0) {
@@ -198,7 +241,7 @@ public class MainActivity extends Activity {
 					gpsWayPoints.add(new WayPoint(
 							MyLocationListener.latitudeGPS,
 							MyLocationListener.longitudeGPS,
-							MyLocationListener.location.getTime()));
+							MyLocationListener.timestampGPS));
 				}
 
 			} else {
@@ -208,12 +251,18 @@ public class MainActivity extends Activity {
 		} else {
 			gpsWayPoints.add(new WayPoint(null, null, new Date().getTime()));
 		}
-		if (gpsWayPoints.size() > 100) {
-			JsonManager.JSONToCache(MainActivity.FILENAMEGPS, this.gpsWayPoints, this);
+		// flush the buffer every MainActivity.BUFFERSIZE points
+		if (gpsWayPoints.size() > MainActivity.BUFFERSIZE) {
+			JsonManager
+					.addWaypointsToRide(MainActivity.FILENAMEGPS, gpsWayPoints,
+							getApplicationContext(), MainActivity.nbRides);
 		}
 	}
 
-	private void addWifiLocation() {
+	/**
+	 * Track the location of the phone through the Network (wifi)
+	 */
+	private void trackWifiLocation() {
 
 		/*
 		 * put that before otherwise the first click is initialising the
@@ -224,7 +273,7 @@ public class MainActivity extends Activity {
 		mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mlocListener = new MyLocationListener(LocationManager.NETWORK_PROVIDER);
 		mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-				5000, 0, mlocListener);
+				m_interval, 0, mlocListener);
 		/* */
 		if (mlocManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			if (MyLocationListener.latitudeWifi > 0) {
@@ -232,7 +281,7 @@ public class MainActivity extends Activity {
 					wifiWayPoints.add(new WayPoint(
 							MyLocationListener.latitudeWifi,
 							MyLocationListener.longitudeWifi,
-							MyLocationListener.location.getTime()));
+							MyLocationListener.timestampWifi));
 				}
 
 			} else {
@@ -242,32 +291,27 @@ public class MainActivity extends Activity {
 		} else {
 			wifiWayPoints.add(new WayPoint(null, null, new Date().getTime()));
 		}
-		if (wifiWayPoints.size() > 100) {
-			JsonManager.JSONToCache(MainActivity.FILENAMEWIFI, this.wifiWayPoints, this);
+		// flush the buffer every MainActivity.BUFFERSIZE points
+		if (wifiWayPoints.size() > MainActivity.BUFFERSIZE) {
+			JsonManager.addWaypointsToRide(MainActivity.FILENAMEWIFI,
+					wifiWayPoints, getApplicationContext(),
+					MainActivity.nbRides);
 		}
 
 	}
 
-	
-
 	/*
 	 * Periodic task
 	 */
-	Runnable m_statusChecker = new Runnable() {
-		@Override
-		public void run() {
-			addGPSLocation();
-			addWifiLocation();
-			m_handler.postDelayed(m_statusChecker, m_interval);
-		}
-	};
+	Runnable m_statusChecker;
 
 	void startRepeatingTask() {
+		// initialize the handler of the timeout for the periodic tasks
 		m_statusChecker = new Runnable() {
 			@Override
 			public void run() {
-				addGPSLocation();
-				addWifiLocation();
+				trackGPSLocation();
+				trackWifiLocation();
 				m_handler.postDelayed(m_statusChecker, m_interval);
 			}
 		};
