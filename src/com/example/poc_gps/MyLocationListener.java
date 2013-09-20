@@ -9,12 +9,12 @@ public class MyLocationListener implements LocationListener {
 
 	public static double latitudeGPS;
 	public static double longitudeGPS;
+	public static long timestampGPS;
 
 	public static double latitudeWifi;
 	public static double longitudeWifi;
-
-	public static Location location;
-	
+	public static long timestampWifi;
+		
 	private String provider;
 
 	public MyLocationListener(String prov) {
@@ -23,15 +23,14 @@ public class MyLocationListener implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location loc) {
-		location = loc;
-		loc.getLatitude();
-		loc.getLongitude();
 		if (this.provider.equals(LocationManager.GPS_PROVIDER)) {
-			latitudeGPS = loc.getLatitude();
-			longitudeGPS = loc.getLongitude();
+			MyLocationListener.latitudeGPS = loc.getLatitude();
+			MyLocationListener.longitudeGPS = loc.getLongitude();
+			MyLocationListener.timestampGPS = loc.getTime();
 		} else {
-			latitudeWifi = loc.getLatitude();
-			longitudeWifi = loc.getLongitude();
+			MyLocationListener.latitudeWifi = loc.getLatitude();
+			MyLocationListener.longitudeWifi = loc.getLongitude();
+			MyLocationListener.timestampWifi = loc.getTime();
 		}
 
 	}
