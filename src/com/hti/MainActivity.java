@@ -30,6 +30,7 @@ public class MainActivity extends FragmentActivity {
 	 *  - View pour tester trololol
 	 *
 	 */
+	public int lol = 0 ;
 	public static final int BUFFERSIZE = 10;
 	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
 	/*
