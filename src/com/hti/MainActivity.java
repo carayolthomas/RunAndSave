@@ -27,7 +27,7 @@ public class MainActivity extends FragmentActivity {
 	 * TODO
 	 *
 	 *  - Association Route / Ride : HashMap
-	 *  - View pour tester
+	 *  - View pour tester trololol
 	 *
 	 */
 	public static final int BUFFERSIZE = 10;
