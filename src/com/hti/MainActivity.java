@@ -27,12 +27,9 @@ public class MainActivity extends FragmentActivity {
 	 * TODO
 	 *
 	 *  - Association Route / Ride : HashMap
-	 *  - View pour tester trololol
+	 *  - View pour tester
 	 *
 	 */
-	public int lol = 0 ;
-	public int lol1 = 0 ;
-	public int lol2 = 0 ;
 	public static final int BUFFERSIZE = 10;
 	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
 	/*
