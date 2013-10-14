@@ -31,6 +31,8 @@ public class MainActivity extends FragmentActivity {
 	 *
 	 */
 	public int lol = 0 ;
+	public int lol1 = 0 ;
+	public int lol2 = 0 ;
 	public static final int BUFFERSIZE = 10;
 	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
 	/*
