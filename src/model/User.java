@@ -15,17 +15,13 @@ public class User {
 	private int userWeight;
 	//private List<Ride> userRides;
 	
-	
-	public User(int userId, String userName, String userEmail, String userPassword, int userWeight) {
+	public User(int userId, String userEmail, String userPassword, int userWeight) {
 		super();
 		this.userId = userId;
-		this.userName = userName;
 		this.userEmail = userEmail;
 		this.userPassword = userPassword;
 		this.userWeight = userWeight;
 	}
-
-	
 
 	public int getUserId() {
 		return userId;
@@ -60,8 +56,7 @@ public class User {
 	
 	public static User login(String username, String clearPassword) throws NoSuchAlgorithmException {
 		HTIDatabaseConnection htiDbConnection = HTIDatabaseConnection.getInstance();
-		//return htiDbConnection.getUser(username, Encode.encode(clearPassword, CRYPTALGO));
-		return htiDbConnection.getUser(username, clearPassword);
+		return htiDbConnection.getUser(username, Encode.encode(clearPassword, CRYPTALGO));
 	}
 	/*public List<Ride> getUserRides() {
 		return userRides;

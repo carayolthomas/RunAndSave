@@ -45,7 +45,7 @@ public class MainActivity extends FragmentActivity {
 	private Date dateStopRunning ;
 	public static boolean isConnectedToInternet;
 	//User fictif en attendant le login
-	public User userConnected = new User(1, "toto", "toto", "toto", 65);
+	public User userConnected = new User(1, "toto", "toto", 65);
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
