@@ -9,11 +9,16 @@ import model.User;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
-public class HTIDatabaseConnection {
+public class HTIDatabaseConnection extends AsyncTask<Void, Void, Void> {
 
 	public static final String ROUTECOLL = "Routes";
 	public static final String RIDECOLL = "Rides";
@@ -24,7 +29,7 @@ public class HTIDatabaseConnection {
 	private String databaseHote;
 	private String databaseName;
 	private Jongo jongo;
-	private DB databaseInst;
+	private static DB databaseInst;
 	
 	private static HTIDatabaseConnection me = null;
 	
@@ -33,7 +38,6 @@ public class HTIDatabaseConnection {
 			HTIDatabaseConnection.me = new HTIDatabaseConnection();
 		}
 		return HTIDatabaseConnection.me;
-		
 	}
 	
 	private HTIDatabaseConnection() {
@@ -42,18 +46,22 @@ public class HTIDatabaseConnection {
 		this.databasePassword = "azerty";
 		this.databaseHote = "mongodb1.alwaysdata.com";
 		this.databaseName = "thomascarayol_hti";
-		doConnect();
 	}
 	
 	private void doConnect() {
-		String uri = this.databaseUsername + ":" + this.databasePassword + "@" + this.databaseHote + "/" + this.databaseName;
+		String uri = "mongodb://" + this.databaseUsername + ":" + this.databasePassword + "@" + this.databaseHote + "/" + this.databaseName;
 		MongoClientURI mongoClientURI = new MongoClientURI(uri);
 		MongoClient mongoClient;
 		DB db = null ;
 		try {
 			mongoClient = new MongoClient(mongoClientURI);
 			db = mongoClient.getDB(this.databaseName);	
-			jongo = new Jongo(db);
+			if(db.authenticate(this.databaseUsername, this.databasePassword.toCharArray())) {
+				Log.i("Auth", "OK");
+			} else {
+				Log.i("Auth", "NOK");
+			}
+			//jongo = new Jongo(db);
 		} catch (UnknownHostException e) {
 			//TODO LOG
 			e.printStackTrace();
@@ -122,7 +130,20 @@ public class HTIDatabaseConnection {
 	}
 	
 	public User getUser(String username, String encodedPassword) {
-		MongoCollection userCollection = jongo.getCollection(USERCOLL);
-		return userCollection.findOne("{userName: #, userPassword:#}", username, encodedPassword).as(User.class);
+		/*MongoCollection userCollection = jongo.getCollection(USERCOLL);
+		return userCollection.findOne("{userName: #, userPassword:#}", username, encodedPassword).as(User.class);*/
+		if(databaseInst.authenticate(this.databaseUsername, this.databasePassword.toCharArray())) {
+			DBCollection userCollection = databaseInst.getCollection(USERCOLL);
+			return (User)userCollection.findOne(new BasicDBObject("userName", username));
+		} else {
+			Log.i("Auth", "NOK");
+		}
+		return null;
+	}
+
+	@Override
+	protected Void doInBackground(Void... params) {
+		me.doConnect();
+		return null;
 	}
 }

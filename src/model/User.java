@@ -60,7 +60,8 @@ public class User {
 	
 	public static User login(String username, String clearPassword) throws NoSuchAlgorithmException {
 		HTIDatabaseConnection htiDbConnection = HTIDatabaseConnection.getInstance();
-		return htiDbConnection.getUser(username, Encode.encode(clearPassword, CRYPTALGO));
+		//return htiDbConnection.getUser(username, Encode.encode(clearPassword, CRYPTALGO));
+		return htiDbConnection.getUser(username, clearPassword);
 	}
 	/*public List<Ride> getUserRides() {
 		return userRides;
