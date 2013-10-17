@@ -11,7 +11,7 @@ public class User {
 	private int userId;
 	private String userName;
 	private String userEmail;
-	private String userPassword; //encode(password, CRYPTALGO)
+	private String userPassword; //encode(password, CRYPTALGO)lol
 	private int userWeight;
 	//private List<Ride> userRides;
 	

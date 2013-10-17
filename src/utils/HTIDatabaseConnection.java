@@ -130,7 +130,7 @@ public class HTIDatabaseConnection extends AsyncTask<Void, Void, Void> {
 	}
 	
 	public User getUser(String username, String encodedPassword) {
-		/*MongoCollection userCollection = jongo.getCollection(USERCOLL);
+		/*MongoCollection userCollection = jongo.getCollection(USERCOLL);lol
 		return userCollection.findOne("{userName: #, userPassword:#}", username, encodedPassword).as(User.class);*/
 		if(databaseInst.authenticate(this.databaseUsername, this.databasePassword.toCharArray())) {
 			DBCollection userCollection = databaseInst.getCollection(USERCOLL);
