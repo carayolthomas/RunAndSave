@@ -146,14 +146,17 @@ public class HTIDatabaseConnection {
 		DBCollection userCollection = databaseInst.getCollection(USERCOLL);
 		DBObject userObject = userCollection.findOne(new BasicDBObject("email", username));
 		try {
-			if(userObject == null || !Encode.encode(clearPassword, "SHA-1").equalsIgnoreCase(userObject.get("password").toString())) {
-				return null;
+			if(userObject == null) {
+				return new User(username, "", 0);
 			} else {
-				return new User(Integer.parseInt(userObject.get("id").toString()),
-				        userObject.get("email").toString(),
-				        userObject.get("password").toString(),
-				        Integer.parseInt(userObject.get("weight").toString()));
-			}
+				if(!Encode.encode(clearPassword, "SHA-1").equalsIgnoreCase(userObject.get("password").toString())) {
+					return null; 
+				} else {
+					return new User(userObject.get("email").toString(),
+					        		userObject.get("password").toString(),
+					        		Integer.parseInt(userObject.get("weight").toString()));
+				}
+			} 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return null;

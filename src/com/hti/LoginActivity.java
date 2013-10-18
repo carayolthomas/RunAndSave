@@ -191,31 +191,29 @@ public class LoginActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
 			
 			HTIDatabaseConnection htiDatabaseConnection = HTIDatabaseConnection.getInstance();
 			if(htiDatabaseConnection.doConnect()) {
 				mUser = htiDatabaseConnection.getUser(mEmail, mPassword);
 				if(mUser == null) {
 					Log.e("Auth", "Problem during the authentification of the user");
-					return false;
+					Log.i("Auth", "Attempt to register");
 				} else {
-					Log.i("Auth", "Authentification succesfull");
+					if(!mUser.getUserEmail().isEmpty()) {
+						Log.i("Auth", "New user to register");
+						mUser.setUserPassword(mPassword);
+						htiDatabaseConnection.insertUser(mUser);
+						
+					} else {
+						Log.i("Auth", "Authentification succesfull");
+						//TODO : Passage à la mainActivity
+					}
 				}
 			} else {
 				Log.e("Auth", "Problem during the authentification into the database");
 				return false;
 			}
 
-			/*for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
-				}
-			}*/
-
-			// TODO: register the new account here.
 			return true;
 		}
 
