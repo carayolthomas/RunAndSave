@@ -1,13 +1,9 @@
 package model;
 
-import java.security.NoSuchAlgorithmException;
-
-import utils.Encode;
-import utils.HTIDatabaseConnection;
 
 public class User {
 
-	private static final String CRYPTALGO="SHA-1";
+	public static final String CRYPTALGO="SHA-1";
 	private String userEmail;
 	private String userPassword; //encode(password, CRYPTALGO)lol
 	private int userWeight;

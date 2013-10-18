@@ -18,6 +18,20 @@ public class Ride {
 	private Date rideStartTimestamp;
 	private Date rideStopTimestamp;
 
+	
+	public Ride(int rideId, int rideRouteId, int rideUserId,
+			double rideCalories, double rideDuration, Date rideStartTimestamp,
+			Date rideStopTimestamp) {
+		super();
+		this.rideId = rideId;
+		this.rideRouteId = rideRouteId;
+		this.rideUserId = rideUserId;
+		this.rideCalories = rideCalories;
+		this.rideDuration = rideDuration;
+		this.rideStartTimestamp = rideStartTimestamp;
+		this.rideStopTimestamp = rideStopTimestamp;
+	}
+
 	public Ride(int rideId, int rideRouteId, double rideCalories,
 			Date rideStartTimestamp, Date rideStopTimestamp) {
 		super();
@@ -56,6 +70,10 @@ public class Ride {
 			JsonManager.addRideInJson(MainActivity.FILENAMERIDE, this,
 					pApplicationContext);
 		}
+	}
+
+	public int getRideRouteId() {
+		return rideRouteId;
 	}
 
 	public int getRideId() {
