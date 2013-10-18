@@ -25,6 +25,7 @@ public class HTIDatabaseConnection {
 	public static final String ROUTECOLL = "Routes";
 	public static final String RIDECOLL = "Rides";
 	public static final String USERCOLL = "Users";
+	public static final String CRYPTALGO = "SHA-1" ;
 	
 	private String databaseUsername;
 	private String databasePassword;
@@ -140,18 +141,26 @@ public class HTIDatabaseConnection {
 		return null;
 	}
 	
+	/**
+	 * Get a user 
+	 * @param username
+	 * @param clearPassword
+	 * @return
+	 */
 	public User getUser(String username, String clearPassword) {
-		/*MongoCollection userCollection = jongo.getCollection(USERCOLL);lol
-		return userCollection.findOne("{userName: #, userPassword:#}", username, encodedPassword).as(User.class);*/
 		DBCollection userCollection = databaseInst.getCollection(USERCOLL);
 		DBObject userObject = userCollection.findOne(new BasicDBObject("email", username));
 		try {
+			// The user doesn't exist
 			if(userObject == null) {
 				return new User(username, "", 0);
 			} else {
-				if(!Encode.encode(clearPassword, "SHA-1").equalsIgnoreCase(userObject.get("password").toString())) {
+				// The email already exists, we suppose that he put a wrong password
+				if(!Encode.encode(clearPassword, CRYPTALGO).equalsIgnoreCase(userObject.get("password").toString())) {
 					return null; 
-				} else {
+				} 
+				// The user has been found in the database
+				else {
 					return new User(userObject.get("email").toString(),
 					        		userObject.get("password").toString(),
 					        		Integer.parseInt(userObject.get("weight").toString()));

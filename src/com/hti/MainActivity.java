@@ -9,12 +9,14 @@ import model.User;
 import utils.GpsTracking;
 import utils.JsonManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -45,7 +47,7 @@ public class MainActivity extends FragmentActivity {
 	private Date dateStopRunning ;
 	public static boolean isConnectedToInternet;
 	//User fictif en attendant le login
-	public User userConnected = new User("toto", "toto", 65);
+	public static User userConnected ;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -66,6 +68,16 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// Get the User thanks to the Intent
+		Intent userIntent = getIntent();
+		if(userIntent != null) {
+			userConnected = new User(userIntent.getStringExtra(LoginActivity.EXTRA_EMAIL),
+									 userIntent.getStringExtra(LoginActivity.EXTRA_PASSWORD),
+									 Integer.parseInt(userIntent.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
+			Log.i("TEST", userConnected.toString());
+		}
+		
 
 		nbRides = JsonManager.getNumberOfRides(this);
 		nbRides = nbRides == 0 ? 0 : nbRides + 1;
@@ -179,7 +191,7 @@ public class MainActivity extends FragmentActivity {
     	// handle the new ride
     	Ride rideToSave = new Ride(nbRides, nbRoutes, 0, dateStartRunning, dateStopRunning);
     	rideToSave.computeRide(userConnected);
-    	rideToSave.saveRide(userConnected.getUserId(), getApplicationContext());
+    	//rideToSave.saveRide(userConnected.getUserId(), getApplicationContext());
     	// modify temp id's
     	nbRides++;
     	nbRoutes++;

@@ -1,11 +1,13 @@
 package com.hti;
 
+import logs.LogTag;
 import model.User;
 import utils.HTIDatabaseConnection;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +30,7 @@ public class LoginActivity extends Activity {
 	 */
 	private UserLoginTask mAuthTask = null;
 	
-	//We store the User connected
+	// We store the User connected
 	private static User mUser;
 
 	// Values for email and password at the time of the login attempt.
@@ -41,6 +43,11 @@ public class LoginActivity extends Activity {
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
+	
+	// Intent tags
+	public static String EXTRA_EMAIL = "user_login";
+	public static String EXTRA_PASSWORD = "user_password";
+	public static String EXTRA_WEIGHT = "user_weight";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -191,29 +198,29 @@ public class LoginActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			
+			// Connection to the database
 			HTIDatabaseConnection htiDatabaseConnection = HTIDatabaseConnection.getInstance();
 			if(htiDatabaseConnection.doConnect()) {
 				mUser = htiDatabaseConnection.getUser(mEmail, mPassword);
 				if(mUser == null) {
-					Log.e("Auth", "Problem during the authentification of the user");
-					Log.i("Auth", "Attempt to register");
+					Log.e(LogTag.AUTHENTIFICATION, "Issue during the authentification of the user");
+					Log.i(LogTag.AUTHENTIFICATION, "Attempt to register");
 				} else {
-					if(!mUser.getUserEmail().isEmpty()) {
-						Log.i("Auth", "New user to register");
+					if(!mUser.getUserEmail().isEmpty() && mUser.getUserPassword().isEmpty()) {
+						Log.i(LogTag.AUTHENTIFICATION, "New user to register");
 						mUser.setUserPassword(mPassword);
 						htiDatabaseConnection.insertUser(mUser);
+						goToMainActivity();
 						
 					} else {
-						Log.i("Auth", "Authentification succesfull");
-						//TODO : Passage à la mainActivity
+						Log.i(LogTag.AUTHENTIFICATION, "Authentification successfull");
+						goToMainActivity();
 					}
 				}
 			} else {
-				Log.e("Auth", "Problem during the authentification into the database");
+				Log.e(LogTag.AUTHENTIFICATION, "Problem during the authentification into the database");
 				return false;
 			}
-
 			return true;
 		}
 
@@ -236,5 +243,14 @@ public class LoginActivity extends Activity {
 			mAuthTask = null;
 			showProgress(false);
 		}
+	}
+	
+	public void goToMainActivity() {
+		Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+		intent.putExtra(EXTRA_EMAIL, mUser.getUserEmail());
+		intent.putExtra(EXTRA_PASSWORD, mUser.getUserPassword());
+		intent.putExtra(EXTRA_WEIGHT, String.valueOf(mUser.getUserWeight()));
+		startActivity(intent);
+		finish();
 	}
 }

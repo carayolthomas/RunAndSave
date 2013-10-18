@@ -39,11 +39,14 @@ public class User {
 	public void setUserWeight(int userWeight) {
 		this.userWeight = userWeight;
 	}
-	
-	public static User login(String username, String clearPassword) throws NoSuchAlgorithmException {
-		HTIDatabaseConnection htiDbConnection = HTIDatabaseConnection.getInstance();
-		return htiDbConnection.getUser(username, Encode.encode(clearPassword, CRYPTALGO));
+
+	@Override
+	public String toString() {
+		return "User [userEmail=" + userEmail + ", userPassword="
+				+ userPassword + ", userWeight=" + userWeight + "]";
 	}
+	
+	
 	/*public List<Ride> getUserRides() {
 		return userRides;
 	}
