@@ -228,7 +228,7 @@ public class HTIDatabaseConnection {
 	 */
 	public User getUser(String username, String clearPassword) {
 		DBCollection userCollection = databaseInst.getCollection(USERCOLL);
-		DBObject userObject = userCollection.findOne(new BasicDBObject("email",
+		DBObject userObject = userCollection.findOne(new BasicDBObject("userEmail",
 				username));
 		try {
 			// The user doesn't exist
@@ -238,14 +238,14 @@ public class HTIDatabaseConnection {
 				// The email already exists, we suppose that he put a wrong
 				// password
 				if (!Encode.encode(clearPassword, CRYPTALGO).equalsIgnoreCase(
-						userObject.get("password").toString())) {
+						userObject.get("userPassword").toString())) {
 					return null;
 				}
 				// The user has been found in the database
 				else {
-					return new User(userObject.get("email").toString(),
-							userObject.get("password").toString(),
-							Integer.parseInt(userObject.get("weight")
+					return new User(userObject.get("userEmail").toString(),
+							userObject.get("userPassword").toString(),
+							Integer.parseInt(userObject.get("userWeight")
 									.toString()));
 				}
 			}
