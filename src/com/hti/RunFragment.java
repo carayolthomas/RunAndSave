@@ -49,13 +49,15 @@ public class RunFragment extends Fragment {
 				new View.OnClickListener() {
 					public void onClick(View view) {
 						if(buttonRun.getText().equals(startText)) {
-							ssrTask = new StartStopRunningTask();
-							ssrTask.execute(startText);
+							/*ssrTask = new StartStopRunningTask();
+							ssrTask.execute(startText);*/
+							MainActivity.startWritingPositionInCache(getActivity().getApplicationContext());
 							buttonRun.setText(stopText);
 							isStart = true ;
 						} else {
-							ssrTask = new StartStopRunningTask();
-							ssrTask.execute(stopText);
+							MainActivity.stopWritingPositionInCache(getActivity().getApplicationContext());
+							/*ssrTask = new StartStopRunningTask();
+							ssrTask.execute(stopText);*/
 							buttonRun.setText(startText);
 							isStart = false ;
 						}
@@ -126,13 +128,12 @@ public class RunFragment extends Fragment {
 	public class StartStopRunningTask extends AsyncTask<String, Void, Void> {
 		@Override
 		protected Void doInBackground(String... params) {
-			
-			/*Looper.prepare();
+			//Looper.prepare();
 			if(params[0].equals(startText)) {
 				MainActivity.startWritingPositionInCache(getActivity().getApplicationContext());
 			} else {
 				MainActivity.stopWritingPositionInCache(getActivity().getApplicationContext());
-			}*/
+			}
 			return null;
 		}
 	}

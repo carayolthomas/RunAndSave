@@ -9,13 +9,14 @@ import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.hti.LoginActivity;
 import com.hti.MainActivity;
 
 public class GpsTracking {
 	
 	private static boolean isStart = false;
 
-	private int m_interval = 1000; // 5 seconds by default, can be changed later
+	private int m_interval = 5000; // 5 seconds by default, can be changed later
 	private Handler m_handler;
 	private Vector<Waypoint> gpsWayPoints;
 	private Vector<Waypoint> wifiWayPoints;
@@ -39,7 +40,7 @@ public class GpsTracking {
 		 */
 		LocationManager mlocManager = null;
 		LocationListener mlocListener;
-		mlocManager = (LocationManager) this.gpsTrackingContext.getSystemService(Context.LOCATION_SERVICE);
+		mlocManager = (LocationManager) LoginActivity.getAppContext().getSystemService(Context.LOCATION_SERVICE);
 		mlocListener = new MyLocationListener(LocationManager.GPS_PROVIDER);
 		// every 5 seconds
 		mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -77,7 +78,7 @@ public class GpsTracking {
 		 */
 		LocationManager mlocManager = null;
 		LocationListener mlocListener;
-		mlocManager = (LocationManager) this.gpsTrackingContext.getSystemService(Context.LOCATION_SERVICE);
+		mlocManager = (LocationManager) LoginActivity.getAppContext().getSystemService(Context.LOCATION_SERVICE);
 		mlocListener = new MyLocationListener(LocationManager.NETWORK_PROVIDER);
 		mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
 				m_interval, 0, mlocListener);
@@ -116,11 +117,9 @@ public class GpsTracking {
 		m_statusChecker = new Runnable() {
 			@Override
 			public void run() {
-				while(true) {
 					trackGPSLocation();
 					trackWifiLocation();
 					m_handler.postDelayed(m_statusChecker, m_interval);
-				}
 			}
 		};
 		m_statusChecker.run();

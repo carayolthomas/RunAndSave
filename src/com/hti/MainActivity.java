@@ -187,7 +187,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public static void startWritingPositionInCache(Context pApplicationContext) {
-		GpsTracking gpst = new GpsTracking(pApplicationContext);
+		GpsTracking gpst = new GpsTracking(LoginActivity.getAppContext());
 		gpst.startRepeatingTask();
 	}
 

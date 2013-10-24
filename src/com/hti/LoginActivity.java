@@ -7,6 +7,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -48,11 +49,14 @@ public class LoginActivity extends Activity {
 	public static String EXTRA_EMAIL = "user_login";
 	public static String EXTRA_PASSWORD = "user_password";
 	public static String EXTRA_WEIGHT = "user_weight";
+	
+	//The context
+	private static Context context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		LoginActivity.context = getApplicationContext();
 		setContentView(R.layout.activity_login);
 
 		// Set up the login form.
@@ -252,5 +256,9 @@ public class LoginActivity extends Activity {
 		intent.putExtra(EXTRA_WEIGHT, String.valueOf(mUser.getUserWeight()));
 		startActivity(intent);
 		finish();
+	}
+	
+	public static Context getAppContext() {
+		return LoginActivity.context;
 	}
 }

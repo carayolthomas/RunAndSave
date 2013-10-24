@@ -17,6 +17,8 @@ public class MyLocationListener implements LocationListener {
 	private String provider;
 
 	public MyLocationListener(String prov) {
+		latitudeGPS = -1;
+		longitudeGPS = -1;
 		this.provider = prov;
 	}
 
