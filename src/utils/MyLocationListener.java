@@ -4,16 +4,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MyLocationListener implements LocationListener {
 
 	public static double latitudeGPS;
 	public static double longitudeGPS;
-	public static long timestampGPS;
 
 	public static double latitudeWifi;
 	public static double longitudeWifi;
-	public static long timestampWifi;
 		
 	private String provider;
 
@@ -23,14 +22,13 @@ public class MyLocationListener implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location loc) {
+		Log.i("GPS", loc.getLatitude() + " ---- " + loc.getLongitude());
 		if (this.provider.equals(LocationManager.GPS_PROVIDER)) {
 			MyLocationListener.latitudeGPS = loc.getLatitude();
 			MyLocationListener.longitudeGPS = loc.getLongitude();
-			MyLocationListener.timestampGPS = loc.getTime();
 		} else {
 			MyLocationListener.latitudeWifi = loc.getLatitude();
 			MyLocationListener.longitudeWifi = loc.getLongitude();
-			MyLocationListener.timestampWifi = loc.getTime();
 		}
 
 	}
@@ -48,4 +46,22 @@ public class MyLocationListener implements LocationListener {
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
+
+	public static double getLatitudeGPS() {
+		return latitudeGPS;
+	}
+
+	public static double getLongitudeGPS() {
+		return longitudeGPS;
+	}
+
+	public static double getLatitudeWifi() {
+		return latitudeWifi;
+	}
+
+	public static double getLongitudeWifi() {
+		return longitudeWifi;
+	}
+	
+	
 }

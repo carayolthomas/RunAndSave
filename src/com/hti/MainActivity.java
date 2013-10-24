@@ -6,11 +6,17 @@ import java.util.Locale;
 import model.Ride;
 import model.Route;
 import model.User;
+import model.Waypoint;
 import utils.GpsTracking;
 import utils.JsonManager;
+import utils.MyLocationListener;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +28,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {
 
@@ -79,10 +86,10 @@ public class MainActivity extends FragmentActivity {
 		}
 		
 
-		nbRides = JsonManager.getNumberOfRides(this);
+		/*nbRides = JsonManager.getNumberOfRides(this);
 		nbRides = nbRides == 0 ? 0 : nbRides + 1;
 		nbRoutes = JsonManager.getNumberOfRoutes(this);
-		nbRoutes = nbRoutes == 0 ? 0 : nbRoutes + 1;
+		nbRoutes = nbRoutes == 0 ? 0 : nbRoutes + 1;*/
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
@@ -120,7 +127,6 @@ public class MainActivity extends FragmentActivity {
 			if(position == 0) {
 				Fragment fragment = new RunFragment();
 				Bundle args = new Bundle();
-				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
 				fragment.setArguments(args);
 				return fragment;
 			}

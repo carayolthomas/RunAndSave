@@ -7,13 +7,15 @@ import android.content.Context;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
+import android.os.Looper;
+
 import com.hti.MainActivity;
 
 public class GpsTracking {
 	
 	private static boolean isStart = false;
 
-	private int m_interval = 5000; // 5 seconds by default, can be changed later
+	private int m_interval = 1000; // 5 seconds by default, can be changed later
 	private Handler m_handler;
 	private Vector<Waypoint> gpsWayPoints;
 	private Vector<Waypoint> wifiWayPoints;
@@ -21,6 +23,9 @@ public class GpsTracking {
 	
 	public GpsTracking(Context pGpsTrackingContext) {
 		this.gpsTrackingContext = pGpsTrackingContext;
+		this.gpsWayPoints = new Vector<Waypoint>();
+		this.wifiWayPoints = new Vector<Waypoint>();
+		this.m_handler = new Handler();
 	}
 	
 	/**
@@ -48,10 +53,10 @@ public class GpsTracking {
 							MyLocationListener.longitudeGPS));
 				}
 			} else {
-				gpsWayPoints.add(new Waypoint(null, null));
+				gpsWayPoints.add(new Waypoint(0., 0.));
 			}
 		} else {
-			gpsWayPoints.add(new Waypoint(null, null));
+			gpsWayPoints.add(new Waypoint(0., 0.));
 		}
 		// flush the buffer every MainActivity.BUFFERSIZE points
 		if (gpsWayPoints.size() > MainActivity.BUFFERSIZE) {
@@ -87,10 +92,10 @@ public class GpsTracking {
 
 			} else {
 				wifiWayPoints
-						.add(new Waypoint(null, null));
+						.add(new Waypoint(0., 0.));
 			}
 		} else {
-			wifiWayPoints.add(new Waypoint(null, null));
+			wifiWayPoints.add(new Waypoint(0., 0.));
 		}
 		// flush the buffer every MainActivity.BUFFERSIZE points
 		if (wifiWayPoints.size() > MainActivity.BUFFERSIZE) {
@@ -111,9 +116,11 @@ public class GpsTracking {
 		m_statusChecker = new Runnable() {
 			@Override
 			public void run() {
-				trackGPSLocation();
-				trackWifiLocation();
-				m_handler.postDelayed(m_statusChecker, m_interval);
+				while(true) {
+					trackGPSLocation();
+					trackWifiLocation();
+					m_handler.postDelayed(m_statusChecker, m_interval);
+				}
 			}
 		};
 		m_statusChecker.run();

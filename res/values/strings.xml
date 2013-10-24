@@ -16,5 +16,6 @@
     <string name="showPassword">Password</string>
     <string name="buttonLogin">Sign in</string>
     <string name="welcomeText">Welcome to HTI !</string>
+    <string name="startButton">Start running !</string>
 
 </resources>

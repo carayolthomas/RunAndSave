@@ -70,6 +70,10 @@ public class Route {
 		return this.routePoints;
 	}
 
+	public void setRoutePoints(List<Waypoint> routePoints) {
+		this.routePoints = routePoints;
+	}
+
 	public void addRoutePoints(Waypoint wpt) {
 		this.routePoints.add(wpt);
 	}

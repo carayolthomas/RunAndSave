@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.List;
 
@@ -194,14 +195,10 @@ public class JsonManager {
 	private static SearchJsonResultRoute createRouteJson(String pFilename, Reader pReader) {
 
 		Gson gson = new Gson();
-		SearchJsonResultRoute routeSearchResult;
-
-		// if the file does not exist yet
-		if (pReader == null) {
+		SearchJsonResultRoute routeSearchResult = gson.fromJson(pReader, SearchJsonResultRoute.class);
+		if(routeSearchResult == null) {
 			Route route = new Route(0, null, 0, true);
 			routeSearchResult = new SearchJsonResultRoute(route);
-		} else {
-			routeSearchResult = gson.fromJson(pReader, SearchJsonResultRoute.class);
 		}
 		return routeSearchResult;
 	}
@@ -228,7 +225,12 @@ public class JsonManager {
 		Route route = routeSearchResult.route;
 		// if the route already exists, just add the next waypoints
 		if(route.getRouteId() == pRouteId) {
-			route.getRoutePoints().addAll(pWayPoints);
+			List<Waypoint> listToAdd = new ArrayList<Waypoint>();
+			if(route.getRoutePoints() != null) {
+				listToAdd.addAll(route.getRoutePoints());
+			}
+			listToAdd.addAll(pWayPoints);
+			route.setRoutePoints(listToAdd);
 		} 
 		// else create the route
 		else {
