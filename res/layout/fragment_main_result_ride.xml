@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_main_result_ride"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_main_result_ride"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
@@ -11,18 +11,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity$DummySectionFragment" >
 
-    <TextView
-        android:id="@+id/userEmailAndWeight"
-        android:layout_width="353dp"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textColorHint="@android:color/white"
-        android:textColorLink="@android:color/white" />
-
-    <TextView
-        android:id="@+id/textView1"
+    <Button
+        android:id="@+id/refreshRidesList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ResultRide" />
+        android:text="Refresh" />
+
+    <ListView
+        android:id="@+id/ridesListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
 
 </LinearLayout>

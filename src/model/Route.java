@@ -2,19 +2,29 @@ package model;
 
 import java.util.List;
 
+import logs.LogTag;
+
 import utils.HTIDatabaseConnection;
 import utils.Internet;
 import utils.JsonManager;
-import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.annotations.SerializedName;
+import com.hti.LoginActivity;
 import com.hti.MainActivity;
 
 public class Route {
-
+	
+	@SerializedName("routeId")
 	private int routeId;
+	
+	@SerializedName("routePoints")
 	private List<Waypoint> routePoints;
+	
+	@SerializedName("routeKm")
 	private float routeKm;
+	
+	@SerializedName("routeIsTemp")
 	private boolean routeIsTemp;
 
 	public Route(int routeId) {
@@ -30,20 +40,23 @@ public class Route {
 		this.routeIsTemp = pRouteIsTemp;
 	}
 
-	public void saveRoute(User pUserId, Context pApplicationContext) {
+	public void saveRoute() {
 		// if internet then store this in the database
-		if(Internet.isNetworkAvailable(pApplicationContext)) {
+		if(Internet.isNetworkAvailable(LoginActivity.getAppContext())) {
 			HTIDatabaseConnection htiDbConnection = HTIDatabaseConnection.getInstance();
 			if(htiDbConnection.getRoute(this.routeId) == null) {
-				htiDbConnection.addRoute(this);
-				Log.v("Route.java", "The route with the id (" + this.routeId + ") has been saved in the database.");
+				String errors = htiDbConnection.addRoute(this);
+				Log.i(LogTag.WRITEDB, "The route with the id (" + this.routeId + ") has been saved in the database.");
+				if(errors != null) {
+					Log.w(LogTag.WRITEDB, "Errors during add route in the database : \n" + errors);
+				}
 			} else {
-				Log.v("Route.java", "The route with the id (" + this.routeId + ") already exist in the database.");
+				Log.i(LogTag.WRITEDB, "The route with the id (" + this.routeId + ") already exist in the database.");
 			}
 		}
 		// else store this in a JSON file (FILENAMEROUTE)
 		else {
-			JsonManager.addRoutesInJson(MainActivity.FILENAMEROUTE, this, pApplicationContext);
+			JsonManager.addRoutesInJson(MainActivity.FILENAMEROUTE, this, LoginActivity.getAppContext());
 		}
 	}
 

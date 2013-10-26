@@ -9,8 +9,10 @@ import java.util.List;
 import model.Ride;
 import model.Route;
 import model.User;
+import model.Waypoint;
 import android.util.Log;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -120,14 +122,17 @@ public class HTIDatabaseConnection {
 		// MongoCollection routeCollection = jongo.getCollection(ROUTECOLL);
 		// return routeCollection.findOne("{routeId:#}",
 		// pRouteId).as(Route.class);
+		Route route = null;
 		DBCollection routeCollection = databaseInst.getCollection(ROUTECOLL);
 		DBObject routeObject = routeCollection.findOne(new BasicDBObject(
 				"routeId", pRouteId));
-		Route route = new Route(Integer.parseInt((String) routeObject
-				.get("routeId")), (ArrayList) routeObject.get("routePoints"),
-				Float.parseFloat((String) routeObject.get("routeKm")),
-				Boolean.parseBoolean((String) routeObject.get(("routeIsTemp"))));
-
+		if(routeObject != null) {
+			route = new Route(
+					Integer.parseInt((String) routeObject.get("routeId")),
+					(ArrayList<Waypoint>) routeObject.get("routePoints"),
+					Float.parseFloat((String) routeObject.get("routeKm")),
+					Boolean.parseBoolean((String) routeObject.get(("routeIsTemp"))));
+		}
 		return route;
 	}
 
@@ -168,10 +173,11 @@ public class HTIDatabaseConnection {
 		// MongoCollection routeCollection = jongo.getCollection(ROUTECOLL);
 		// return routeCollection.insert(pRoute).getError();
 		DBCollection routeCollection = databaseInst.getCollection(ROUTECOLL);
+		
+		BasicDBObject newRoute = new BasicDBObject("routeId", pRoute.getRouteId()).
+											append("routePoints", pRoute.getRoutePoints()).
+											append("routeKm", pRoute.getRouteKm());
 
-		BasicDBObject newRoute = new BasicDBObject("routeId",
-				pRoute.getRouteId()).append("routePoints",
-				pRoute.getRoutePoints()).append("routeKm", pRoute.getRouteKm());
 		return routeCollection.insert(newRoute).getError();
 	}
 
@@ -202,15 +208,17 @@ public class HTIDatabaseConnection {
 	 * @param pUserId
 	 * @return
 	 */
-	public List<Ride> getAllUserRides(int pUserId) {
+	public List<Ride> getAllUserRides() {
 		// MongoCollection rideCollection = jongo.getCollection(RIDECOLL);
 		// return rideCollection.find("{rideUserId:#}",pUserId).as(Ride.class);
-		DBCollection userCollection = databaseInst.getCollection(USERCOLL);
+		DBCollection userCollection = databaseInst.getCollection(RIDECOLL);
 		DBCursor cursor = userCollection.find();
 		ArrayList<Ride> userRides = new ArrayList<Ride>();
 		try {
 			while (cursor.hasNext()) {
-				userRides.add((Ride) cursor.next());
+				DBObject next = cursor.next();
+				String id = String.valueOf(next.get("rideId"));
+				userRides.add(new Ride(Integer.parseInt(id), 0, 0., new Date(), new Date()));
 			}
 		} finally {
 			cursor.close();
@@ -245,7 +253,7 @@ public class HTIDatabaseConnection {
 				else {
 					return new User(userObject.get("userEmail").toString(),
 							userObject.get("userPassword").toString(),
-							Integer.parseInt(userObject.get("userWeight")
+							Float.parseFloat(userObject.get("userWeight")
 									.toString()));
 				}
 			}
@@ -253,5 +261,15 @@ public class HTIDatabaseConnection {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public int getNumberOfRoutes() {
+		DBCollection routeCollection = databaseInst.getCollection(ROUTECOLL);
+		return routeCollection.find().count();
+	}
+	
+	public int getNumberOfRides() {
+		DBCollection rideCollection = databaseInst.getCollection(RIDECOLL);
+		return rideCollection.find().count();
 	}
 }

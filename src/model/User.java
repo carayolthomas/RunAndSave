@@ -6,10 +6,10 @@ public class User {
 	public static final String CRYPTALGO="SHA-1";
 	private String userEmail;
 	private String userPassword; //encode(password, CRYPTALGO)lol
-	private int userWeight;
+	private float userWeight;
 	//private List<Ride> userRides;
 	
-	public User(String userEmail, String userPassword, int userWeight) {
+	public User(String userEmail, String userPassword, float userWeight) {
 		super();
 		this.userEmail = userEmail;
 		this.userPassword = userPassword;
@@ -28,7 +28,7 @@ public class User {
 		this.userPassword = userPassword;
 	}
 
-	public int getUserWeight() {
+	public float getUserWeight() {
 		return userWeight;
 	}
 

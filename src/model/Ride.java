@@ -7,6 +7,7 @@ import utils.Internet;
 import utils.JsonManager;
 import android.content.Context;
 
+import com.hti.LoginActivity;
 import com.hti.MainActivity;
 
 public class Ride {
@@ -46,29 +47,28 @@ public class Ride {
 		return 0;
 	}
 
-	public void computeRide(User userId) {
+	public void computeRide() {
 		// calculate the duration & calories
 		if (rideStartTimestamp != null && rideStopTimestamp != null) {
 			long duration = (rideStopTimestamp.getTime() - rideStartTimestamp
 					.getTime()) / 60000;
-			int weight = userId.getUserWeight();
+			float weight = MainActivity.userConnected.getUserWeight();
 			rideCalories = (double) (weight * 2.204) * duration * 0.1;
 			rideDuration = duration;
 		}
 	}
 
-	public void saveRide(int userId, Context pApplicationContext) {
+	public void saveRide() {
 		// if internet then store this in the database
-		if (Internet.isNetworkAvailable(pApplicationContext)) {
+		if (Internet.isNetworkAvailable(LoginActivity.getAppContext())) {
 			HTIDatabaseConnection htiDbConnection = HTIDatabaseConnection
 					.getInstance();
-			this.rideUserId = userId;
 			htiDbConnection.addRide(this);
 		}
 		// else store this in a JSON file (FILENAMERIDE)
 		else {
 			JsonManager.addRideInJson(MainActivity.FILENAMERIDE, this,
-					pApplicationContext);
+					LoginActivity.getAppContext());
 		}
 	}
 
@@ -118,6 +118,10 @@ public class Ride {
 
 	public void setRideStopTimestamp(Date rideStopTimestamp) {
 		this.rideStopTimestamp = rideStopTimestamp;
+	}
+	
+	public String toString() {
+		return "Ride n°" + this.rideId + " : " + this.rideDuration + "min / " + this.rideCalories + "kcal. (" + this.rideStartTimestamp.toString() + ")";   
 	}
 
 }

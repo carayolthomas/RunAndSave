@@ -51,12 +51,14 @@ public class LoginActivity extends Activity {
 	public static String EXTRA_WEIGHT = "user_weight";
 	
 	//The context
-	private static Context context;
+	private static Context mApplicationContext;
+	private static Context mActivityContext;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		LoginActivity.context = getApplicationContext();
+		LoginActivity.mApplicationContext = getApplicationContext();
+		LoginActivity.mActivityContext = this;
 		setContentView(R.layout.activity_login);
 
 		// Set up the login form.
@@ -259,6 +261,10 @@ public class LoginActivity extends Activity {
 	}
 	
 	public static Context getAppContext() {
-		return LoginActivity.context;
+		return LoginActivity.mApplicationContext;
+	}
+	
+	public static Context getActContext() {
+		return LoginActivity.mActivityContext;
 	}
 }

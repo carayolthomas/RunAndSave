@@ -23,22 +23,20 @@ public class JsonManager {
 	 * 
 	 * @param pFilename
 	 *            the name of the file
-	 * @param pContext
-	 *            the context of the application to access the cache
 	 * @return the reader to read the file
 	 */
-	public static Reader openReader(String pFilename, Context pContext) {
+	public static Reader openReader(String pFilename) {
 		Reader reader = null;
 
 		try {
-			reader = new InputStreamReader(pContext.openFileInput(pFilename));
+			reader = new InputStreamReader(LoginActivity.getAppContext().openFileInput(pFilename));
 		} catch (FileNotFoundException e1) {
 			FileOutputStream cacheFile;
 			try {
-				cacheFile = pContext.openFileOutput(pFilename,
+				cacheFile = LoginActivity.getAppContext().openFileOutput(pFilename,
 						Context.MODE_PRIVATE);
 				cacheFile.close();
-				reader = JsonManager.openReader(pFilename, pContext);
+				reader = JsonManager.openReader(pFilename);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -56,12 +54,11 @@ public class JsonManager {
 	 *            the context to access the cache
 	 * @return the number of routes in cache
 	 */
-	public static int getNumberOfRides(Context context) {
+	public static int getNumberOfRides() {
 		Gson gson = new Gson();
 		// Subjective choice in the filenale, we could open the wifi file or
 		// create only 1 file
-		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS,
-				context);
+		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS);
 		int nb;
 		try {
 			nb = gson.fromJson(reader, SearchJsonResultRoutes.class).routes.size();
@@ -96,7 +93,7 @@ public class JsonManager {
 	public static void addRideInJson(String pFileName, Ride pRide, Context pContext) {
 		Gson gson = new Gson();
 		FileOutputStream cacheFile;
-		Reader reader = JsonManager.openReader(pFileName, pContext);
+		Reader reader = JsonManager.openReader(pFileName);
 		SearchJsonResultRides ridesSearchResult = JsonManager.createRideJson(pFileName, reader);
 
 		List<Ride> rides = ridesSearchResult.rides;
@@ -148,7 +145,7 @@ public class JsonManager {
 	public static void addRoutesInJson(String pFileName, Route pRoute, Context pContext) {
 		Gson gson = new Gson();
 		FileOutputStream cacheFile;
-		Reader reader = JsonManager.openReader(pFileName, pContext);
+		Reader reader = JsonManager.openReader(pFileName);
 		SearchJsonResultRoutes routesSearchResult = JsonManager.createRoutesJson(pFileName, reader);
 
 		List<Route> routes = routesSearchResult.routes;
@@ -197,7 +194,7 @@ public class JsonManager {
 		Gson gson = new Gson();
 		SearchJsonResultRoute routeSearchResult = gson.fromJson(pReader, SearchJsonResultRoute.class);
 		if(routeSearchResult == null) {
-			Route route = new Route(0, null, 0, true);
+			Route route = new Route(MainActivity.nbRoutes, null, 0, true);
 			routeSearchResult = new SearchJsonResultRoute(route);
 		}
 		return routeSearchResult;
@@ -219,7 +216,7 @@ public class JsonManager {
 	public static void addRouteInJson(String pFileName, Vector<Waypoint> pWayPoints, Context pContext, int pRouteId) {
 		Gson gson = new Gson();
 		FileOutputStream cacheFile;
-		Reader reader = JsonManager.openReader(pFileName, pContext);
+		Reader reader = JsonManager.openReader(pFileName);
 		SearchJsonResultRoute routeSearchResult = JsonManager.createRouteJson(pFileName, reader);
 
 		Route route = routeSearchResult.route;
@@ -234,7 +231,7 @@ public class JsonManager {
 		} 
 		// else create the route
 		else {
-			route = new Route(routeSearchResult.route.getRouteId(), pWayPoints, 0, true);
+			route = new Route(MainActivity.nbRoutes, pWayPoints, 0, true);
 		}
 
 		// update the file in cache
@@ -279,12 +276,11 @@ public class JsonManager {
 	 *            the context to access the cache
 	 * @return the number of routes in cache
 	 */
-	public static int getNumberOfRoutes(Context context) {
+	public static int getNumberOfRoutes() {
 		Gson gson = new Gson();
 		// Subjective choice in the filenale, we could open the wifi file or
 		// create only 1 file
-		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS,
-				context);
+		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS);
 		int nb;
 		try {
 			nb = gson.fromJson(reader, SearchJsonResultRoutes.class).routes.size();

@@ -1,9 +1,26 @@
 package model;
 
-public class Waypoint {
-	private Double waypointLat;
-	private Double waypointLng;
 
+import com.google.gson.annotations.SerializedName;
+import com.mongodb.BasicDBObject;
+
+public class Waypoint extends BasicDBObject{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@SerializedName("waypointLat")
+	private Double waypointLat;
+	
+	@SerializedName("waypointLng")
+	private Double waypointLng;
+	
+	public Waypoint() {
+		super();
+	}
+	
 	public Waypoint(Double waypointLat, Double waypointLng) {
 		super();
 		this.waypointLat = waypointLat;

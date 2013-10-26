@@ -17,14 +17,12 @@ public class MyLocationListener implements LocationListener {
 	private String provider;
 
 	public MyLocationListener(String prov) {
-		latitudeGPS = -1;
-		longitudeGPS = -1;
 		this.provider = prov;
 	}
 
 	@Override
 	public void onLocationChanged(Location loc) {
-		Log.i("GPS", loc.getLatitude() + " ---- " + loc.getLongitude());
+		Log.i("LocationListener", loc.getLatitude() + " ---- " + loc.getLongitude());
 		if (this.provider.equals(LocationManager.GPS_PROVIDER)) {
 			MyLocationListener.latitudeGPS = loc.getLatitude();
 			MyLocationListener.longitudeGPS = loc.getLongitude();

@@ -3,32 +3,23 @@ package com.hti;
 import java.util.Date;
 import java.util.Locale;
 
+import logs.LogTag;
 import model.Ride;
 import model.Route;
 import model.User;
-import model.Waypoint;
 import utils.GpsTracking;
+import utils.HTIDatabaseConnection;
 import utils.JsonManager;
-import utils.MyLocationListener;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {
 
@@ -50,12 +41,20 @@ public class MainActivity extends FragmentActivity {
 	public static final String FILENAMEROUTE = "routes.json";
 	public static int nbRides = 0;
 	public static int nbRoutes = 0;
-	private Date dateStartRunning ;
-	private Date dateStopRunning ;
+	public static Date dateStartRunning ;
+	public static Date dateStopRunning ;
 	public static boolean isConnectedToInternet;
 	//User fictif en attendant le login
 	public static User userConnected ;
-
+	
+	//AsyncTasks to call
+	private static SaveRouteInDBTask taskRoute;
+	private static SaveRideInDBTask taskRide;
+	private static GetCurrentIdsTask taskIds;
+	
+	//My Fragments
+	private RideResultFragment rideResultFragment;
+	private RunFragment runFragment;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -81,16 +80,14 @@ public class MainActivity extends FragmentActivity {
 		if(userIntent != null) {
 			userConnected = new User(userIntent.getStringExtra(LoginActivity.EXTRA_EMAIL),
 									 userIntent.getStringExtra(LoginActivity.EXTRA_PASSWORD),
-									 Integer.parseInt(userIntent.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
+									 Float.parseFloat(userIntent.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
 			Log.i("TEST", userConnected.toString());
 		}
 		
-
-		/*nbRides = JsonManager.getNumberOfRides(this);
-		nbRides = nbRides == 0 ? 0 : nbRides + 1;
-		nbRoutes = JsonManager.getNumberOfRoutes(this);
-		nbRoutes = nbRoutes == 0 ? 0 : nbRoutes + 1;*/
-
+		//Update ids
+		taskIds = new GetCurrentIdsTask();
+		taskIds.execute();
+		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
@@ -164,35 +161,55 @@ public class MainActivity extends FragmentActivity {
 	/*
 	 * Gestion du tracking GPS & WIFI
 	 */
-    public void startLogPosition() {
-    	startWritingPositionInCache(getApplicationContext());
+    public static void startLogPosition() {
+    	//Nettoyage des fichiers cache
+    	cleanCacheFiles();
+		//StartWritingPositionInCache
+    	startWritingPositionInCache();
     	// start chrono
     	dateStartRunning = new Date();
     }
 
-    public void stopLogPosition() {
-    	stopWritingPositionInCache(getApplicationContext());
+	private static void cleanCacheFiles() {
+		if(LoginActivity.getAppContext().deleteFile(MainActivity.FILENAMEGPS)) {
+			Log.i("Delete file", "FILENAMEGPS file has been deleted");
+		} else {
+			Log.w("Delete file", "Problem deleting FILENAMEGPS file");
+		}
+		if(LoginActivity.getAppContext().deleteFile(MainActivity.FILENAMEWIFI)) {
+			Log.i("Delete file", "FILENAMEWIFI file has been deleted");
+		} else {
+			Log.w("Delete file", "Problem deleting FILENAMEWIFI file");
+		}
+	}
+
+    public static void stopLogPosition() {
+    	stopWritingPositionInCache();
     	// stop chrono
     	dateStopRunning = new Date();
     	// handle the new route
-    	Route routeToSave = JsonManager.getRoute(JsonManager.openReader(FILENAMEGPS, getApplicationContext())).route;
-    	routeToSave.saveRoute(userConnected, getApplicationContext());
+    	Route routeToSave = JsonManager.getRoute(JsonManager.openReader(FILENAMEWIFI)).route;
+    	taskRoute = new SaveRouteInDBTask();
+    	taskRoute.execute(routeToSave);
     	// handle the new ride
     	Ride rideToSave = new Ride(nbRides, nbRoutes, 0, dateStartRunning, dateStopRunning);
-    	rideToSave.computeRide(userConnected);
-    	//rideToSave.saveRide(userConnected.getUserId(), getApplicationContext());
+    	rideToSave.computeRide();
+    	taskRide = new SaveRideInDBTask();
+    	taskRide.execute(rideToSave);
     	// modify temp id's
     	nbRides++;
     	nbRoutes++;
     }
 
-    public static void startWritingPositionInCache(Context pApplicationContext) {
-		GpsTracking gpst = new GpsTracking(LoginActivity.getAppContext());
+    public static void startWritingPositionInCache() {
+		GpsTracking gpst = new GpsTracking();
+		gpst.startTracking();
 		gpst.startRepeatingTask();
 	}
 
-    public static void stopWritingPositionInCache(Context pApplicationContext) {
-		GpsTracking gpst = new GpsTracking(pApplicationContext);
+    public static void stopWritingPositionInCache() {
+		GpsTracking gpst = new GpsTracking();
+		gpst.stopTracking();
 		gpst.stopRepeatingTask();
 	}
 
@@ -206,150 +223,54 @@ public class MainActivity extends FragmentActivity {
 	public static void associateOldRouteIdWithNewId() {
 
 	}
-
-	/*
-	 * Cache tasks
-	 */
+	
 	/**
-	 * Add the listener on the buttons 'displayGPSCache' and 'displayWifiCache'
+	 * AsyncTask save Route in Database
 	 */
-	/*private void addDisplayCacheListener() {
-		findViewById(R.id.displayGPSCache).setOnClickListener(
-				new View.OnClickListener() {
-					public void onClick(View view) {
-						displayCache(FILENAMEGPS);
-					}
-				});
-
-		findViewById(R.id.displayWifiCache).setOnClickListener(
-				new View.OnClickListener() {
-					public void onClick(View view) {
-						displayCache(FILENAMEWIFI);
-					}
-				});
-	}*/
-
-	/**
-	 * Add the listener on the button 'cleanGPSCache'
-	 */
-	/*private void cleanGPSCacheListener() {
-		findViewById(R.id.cleanGPSCache).setOnClickListener(
-				new View.OnClickListener() {
-					public void onClick(View view) {
-						deleteFile(FILENAMEGPS);
-					}
-				});
-
-	}*/
-
-	/**
-	 * Add the listener on the button 'cleanWifiCache'
-	 */
-	/*private void cleanWifiCacheListener() {
-		findViewById(R.id.cleanWifiCache).setOnClickListener(
-				new View.OnClickListener() {
-					public void onClick(View view) {
-						deleteFile(FILENAMEWIFI);
-					}
-				});
-	}*/
-
-	/**
-	 * Display the content of a file in cache
-	 *
-	 * @param cacheFilename
-	 *            the file in cache to display
-	 */
-	/*private void displayCache(String cacheFilename) {
-		// Dsiplay the cache only if the tracking is off
-		if (!isStart) {
-			try {
-				String content = "";
-				Reader reader = JsonManager.openReader(cacheFilename, this);
-				SearchJSONResult ridesSearchResult = JsonManager
-						.getAllRides(reader);
-				List<Ride> rides = ridesSearchResult.rides;
-
-				// get the content
-				if (rides != null && rides.size() > 0) {
-
-					for (int i = 0; i < rides.size(); i++) {
-						Ride ride = rides.get(i);
-						content += "Ride : " + ride.rideNumber + "\n";
-
-						for (int j = 0; j < ride.wayPoints.size(); j++) {
-							content += "\t" + ride.wayPoints.get(j).lat + ";"
-									+ ride.wayPoints.get(j).lng + " at "
-									+ new Date(ride.wayPoints.get(j).timestamp)
-									+ "\n";
-						}
-						content += "----\n";
-					}
-				} else {
-					content = "No ride.";
-				}
-				reader.close();
-				// Display the content
-				AlertDialog.Builder alert = new AlertDialog.Builder(
-						MainActivity.this);
-				alert.setTitle("Cache");
-				alert.setMessage(content);
-				alert.setPositiveButton("OK", null);
-				alert.show();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Toast.makeText(getApplicationContext(), e.getMessage(),
-						Toast.LENGTH_LONG).show();
+	
+	public static class SaveRouteInDBTask extends AsyncTask<Route, Void, Void> {
+		@Override
+		protected Void doInBackground(Route... params) {
+			if(params[0] != null) {
+				params[0].saveRoute();
+			} else {
+				Log.e(LogTag.WRITEDB, "Problem while saving the route in the database, maybe the route is null");
 			}
-
-		} else {
-			Toast.makeText(getApplicationContext(), "Stop recording first!",
-					Toast.LENGTH_LONG).show();
+			return null;
 		}
-	}*/
-
-	/*
-	 * Location tasks
-	 */
+	}
+	
+	
 	/**
-	 * Add a listener on the button 'cache' which enable the tracking
+	 * AsyncTask save Ride on Database
 	 */
-	/*private void addRecordLocationListener() {
-		findViewById(R.id.cache).setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				if (isStart) {
-					// flush the buffered waypoints
-					JsonManager.addWaypointsToRide(MainActivity.FILENAMEGPS,
-							gpsWayPoints, getApplicationContext(),
-							MainActivity.nbRides);
-					JsonManager.addWaypointsToRide(MainActivity.FILENAMEWIFI,
-							wifiWayPoints, getApplicationContext(),
-							MainActivity.nbRides);
-					// change message
-					Button mButton = (Button) findViewById(R.id.cache);
-					mButton.setText("Start recording position when click");
-					MainActivity.isStart = false;
-					MainActivity.nbRides++;
-					stopRepeatingTask();
-				} else {
-					try {
-						m_interval = Integer
-								.parseInt(((EditText) findViewById(R.id.sampleTime))
-										.getText().toString()) * 1000;
-					} catch (Exception e) {
-						m_interval = 5000;
-					}
-
-					gpsWayPoints = new Vector<WayPoint>();
-					wifiWayPoints = new Vector<WayPoint>();
-					MainActivity.isStart = true;
-					startRepeatingTask();
-					Button mButton = (Button) findViewById(R.id.cache);
-					mButton.setText("Stop recording position when click");
-				}
+	public static class SaveRideInDBTask extends AsyncTask<Ride, Void, Void> {
+		@Override
+		protected Void doInBackground(Ride... params) {
+			if(params[0] != null) {
+				params[0].saveRide();
+			} else {
+				Log.e(LogTag.WRITEDB, "Problem while saving the ride in the database, maybe the ride is null");
 			}
-		});
-	}*/
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * AsyncTask get current routeId & rideId
+	 */
+	public static class GetCurrentIdsTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected Void doInBackground(Void... params) {
+			nbRides = HTIDatabaseConnection.getInstance().getNumberOfRides();
+			//nbRides = nbRides == 0 ? 0 : nbRides + 1;
+			nbRoutes = HTIDatabaseConnection.getInstance().getNumberOfRoutes();
+			//nbRoutes = nbRoutes == 0 ? 0 : nbRoutes + 1;
+			return null;
+		}
+	}
+
+	
 
 }
