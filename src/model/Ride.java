@@ -1,6 +1,9 @@
 package model;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import utils.HTIDatabaseConnection;
 import utils.Internet;
@@ -18,6 +21,7 @@ public class Ride {
 	private double rideDuration;
 	private Date rideStartTimestamp;
 	private Date rideStopTimestamp;
+	private String rideDate;
 
 	
 	public Ride(int rideId, int rideRouteId, int rideUserId,
@@ -31,6 +35,7 @@ public class Ride {
 		this.rideDuration = rideDuration;
 		this.rideStartTimestamp = rideStartTimestamp;
 		this.rideStopTimestamp = rideStopTimestamp;
+		
 	}
 
 	public Ride(int rideId, int rideRouteId, double rideCalories,
@@ -41,6 +46,19 @@ public class Ride {
 		this.rideCalories = rideCalories;
 		this.rideStartTimestamp = rideStartTimestamp;
 		this.rideStopTimestamp = rideStopTimestamp;
+	}
+	
+	
+
+	public Ride(int rideId, int rideRouteId, int rideUserId,
+			double rideCalories, double rideDuration, String rideDate) {
+		super();
+		this.rideId = rideId;
+		this.rideRouteId = rideRouteId;
+		this.rideUserId = rideUserId;
+		this.rideCalories = rideCalories;
+		this.rideDuration = rideDuration;
+		this.rideDate = rideDate;
 	}
 
 	public int addRideToQueue() {
@@ -55,6 +73,8 @@ public class Ride {
 			float weight = MainActivity.userConnected.getUserWeight();
 			rideCalories = (double) (weight * 2.204) * duration * 0.1;
 			rideDuration = duration;
+			Calendar calendar = Calendar.getInstance();
+			rideDate = new SimpleDateFormat("yyyy-MM-dd",new Locale("FR","fr")).format(calendar.getTime());
 		}
 	}
 
@@ -120,8 +140,17 @@ public class Ride {
 		this.rideStopTimestamp = rideStopTimestamp;
 	}
 	
+	public String getRideDate() {
+		return rideDate;
+	}
+
+	public void setRideDate(String rideDate) {
+		this.rideDate = rideDate;
+	}
+	
 	public String toString() {
-		return "Ride n°" + this.rideId + " : " + this.rideDuration + "min / " + this.rideCalories + "kcal. (" + this.rideStartTimestamp.toString() + ")";   
+		return "Ride n°" + this.rideId + " : " + (int)this.rideDuration + "min / " + 
+				(int)this.rideCalories + " cal. (" + this.rideDate + ")";   
 	}
 
 }

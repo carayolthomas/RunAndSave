@@ -198,7 +198,8 @@ public class HTIDatabaseConnection {
 				.append("rideDuration", pRide.getRideDuration())
 				.append("rideStartTimestamp", pRide.getRideStartTimestamp())
 				.append("rideStopTimestamp", pRide.getRideStopTimestamp())
-				.append("rideUserId", pRide.getRideUserId());
+				.append("rideUserId", pRide.getRideUserId())
+				.append("rideDate", pRide.getRideDate().toString());
 		return rideCollection.insert(newRide).getError();
 	}
 
@@ -217,8 +218,12 @@ public class HTIDatabaseConnection {
 		try {
 			while (cursor.hasNext()) {
 				DBObject next = cursor.next();
-				String id = String.valueOf(next.get("rideId"));
-				userRides.add(new Ride(Integer.parseInt(id), 0, 0., new Date(), new Date()));
+				String rideId = String.valueOf(next.get("rideId"));
+				String rideRouteId = String.valueOf(next.get("rideRouteId"));
+				String rideCalories = String.valueOf(next.get("rideCalories"));
+				String rideDuration = String.valueOf(next.get("rideDuration"));
+				String rideDate = String.valueOf(next.get("rideDate"));
+				userRides.add(new Ride(Integer.parseInt(rideId), Integer.parseInt(rideRouteId), 0, Double.parseDouble(rideCalories), Double.parseDouble(rideDuration), rideDate));
 			}
 		} finally {
 			cursor.close();

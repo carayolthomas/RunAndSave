@@ -17,5 +17,8 @@
     <string name="buttonLogin">Sign in</string>
     <string name="welcomeText">Welcome to HTI !</string>
     <string name="startButton">Start running !</string>
+    <string name="replaceImageViewRideRow">Image</string>
+    <string name="refreshRidesList">Refresh rides list</string>
+    
 
 </resources>

@@ -9,10 +9,14 @@ import com.hti.MainActivity.GetCurrentIdsTask;
 import model.Ride;
 
 import utils.HTIDatabaseConnection;
+import utils.ItemRide;
+import utils.ItemRideAdapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.content.ClipData.Item;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 public class RideResultFragment extends Fragment {
@@ -58,7 +63,13 @@ public class RideResultFragment extends Fragment {
 			while(taskRides.get().booleanValue() != true) {
 				Thread.sleep(10);
 			}
-			listRidesView.setAdapter(new ArrayAdapter<String>(LoginActivity.getAppContext(), android.R.layout.simple_list_item_1, listRidesInfosToString));
+			
+			ItemRideAdapter adapter = new ItemRideAdapter(this.getActivity().getApplicationContext(),
+														  R.layout.item_ride_row,
+														  listRidesInfosToString.toArray(new String[listRidesInfosToString.size()]));
+			listRidesView.setAdapter(adapter);
+
+			//listRidesView.setAdapter(new ArrayAdapter<String>(LoginActivity.getAppContext(), android.R.layout.simple_list_item_1, listRidesInfosToString));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
