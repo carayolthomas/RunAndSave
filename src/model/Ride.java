@@ -50,7 +50,7 @@ public class Ride {
 	
 	
 
-	public Ride(int rideId, int rideRouteId, int rideUserId,
+	public Ride(int rideId, int rideUserId, int rideRouteId,
 			double rideCalories, double rideDuration, String rideDate) {
 		super();
 		this.rideId = rideId;

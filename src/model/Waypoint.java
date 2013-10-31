@@ -1,10 +1,14 @@
 package model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.BasicDBObject;
 
-public class Waypoint extends BasicDBObject{
+public class Waypoint extends BasicDBObject implements Parcelable{
 	
 	/**
 	 * 
@@ -33,6 +37,35 @@ public class Waypoint extends BasicDBObject{
 
 	public Double getWaypointLng() {
 		return waypointLng;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeDouble(this.waypointLat);
+		dest.writeDouble(this.waypointLng);
+	}
+	
+	public static final Parcelable.Creator<Waypoint> CREATOR = new Creator<Waypoint>() {
+			
+		@Override
+		public Waypoint[] newArray(int size) {
+			return new Waypoint[size];
+		}
+		
+		@Override
+		public Waypoint createFromParcel(Parcel source) {
+			return new Waypoint(source);
+		}
+	};
+	
+	public Waypoint (Parcel in) {
+		this.waypointLat = in.readDouble();
+		this.waypointLng = in.readDouble();
 	}
 
 }

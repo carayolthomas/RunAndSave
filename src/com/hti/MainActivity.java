@@ -17,9 +17,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 
 public class MainActivity extends FragmentActivity {
 
@@ -53,8 +55,9 @@ public class MainActivity extends FragmentActivity {
 	private static GetCurrentIdsTask taskIds;
 	
 	//My Fragments
-	private RideResultFragment rideResultFragment;
-	private RunFragment runFragment;
+	public static RideResultFragment rideResultFragment;
+	public static RunFragment runFragment;
+	public static DisplayMapFragment displayMapFragment;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -63,12 +66,12 @@ public class MainActivity extends FragmentActivity {
 	 * intensive, it may be best to switch to a
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
-	SectionsPagerAdapter mSectionsPagerAdapter;
+	public static SectionsPagerAdapter mSectionsPagerAdapter;
 
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
-	ViewPager mViewPager;
+	public static ViewPager mViewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,9 @@ public class MainActivity extends FragmentActivity {
 									 Float.parseFloat(userIntent.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
 			Log.i("TEST", userConnected.toString());
 		}
+		
+		//Manage the fragment
+		displayMapFragment = new DisplayMapFragment();
 		
 		//Update ids
 		taskIds = new GetCurrentIdsTask();
@@ -122,25 +128,32 @@ public class MainActivity extends FragmentActivity {
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
 			if(position == 0) {
-				Fragment fragment = new RunFragment();
+				runFragment = new RunFragment();
 				Bundle args = new Bundle();
-				fragment.setArguments(args);
-				return fragment;
+				runFragment.setArguments(args);
+				return runFragment;
 			}
 			if(position == 1) {
-				Fragment fragment = new RideResultFragment();
+				rideResultFragment = new RideResultFragment();
 				Bundle args = new Bundle();
 				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-				fragment.setArguments(args);
-				return fragment;
+				rideResultFragment.setArguments(args);
+				return rideResultFragment;
+			}
+			if(position == 2) {
+				displayMapFragment = new DisplayMapFragment();
+				Bundle args = new Bundle();
+				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+				displayMapFragment.setArguments(args);
+				return displayMapFragment;
 			}
 			return null;
 		}
 
 		@Override
 		public int getCount() {
-			// Show 2 total pages.
-			return 2;
+			// Show 3 total pages.
+			return 3;
 		}
 
 		@Override
@@ -270,7 +283,4 @@ public class MainActivity extends FragmentActivity {
 			return null;
 		}
 	}
-
-	
-
 }

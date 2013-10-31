@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.hti.LoginActivity;
 import com.hti.MainActivity;
+import com.mongodb.BasicDBObject;
 
 public class GpsTracking {
 	
@@ -18,16 +19,16 @@ public class GpsTracking {
 
 	private int m_interval = 3000; // 5 seconds by default, can be changed later
 	private Handler m_handler;
-	private Vector<Waypoint> gpsWayPoints;
-	private Vector<Waypoint> wifiWayPoints;
+	private Vector<BasicDBObject> gpsWayPoints;
+	private Vector<BasicDBObject> wifiWayPoints;
 	private static LocationManager mlocManagerGPS;
 	private static LocationListener mlocListenerGPS;
 	private static LocationManager mlocManagerWifi;
 	private static LocationListener mlocListenerWifi;
 	
 	public GpsTracking() {
-		this.gpsWayPoints = new Vector<Waypoint>();
-		this.wifiWayPoints = new Vector<Waypoint>();
+		this.gpsWayPoints = new Vector<BasicDBObject>();
+		this.wifiWayPoints = new Vector<BasicDBObject>();
 		this.m_handler = new Handler();
 	}
 	

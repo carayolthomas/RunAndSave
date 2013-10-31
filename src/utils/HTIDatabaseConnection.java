@@ -128,10 +128,10 @@ public class HTIDatabaseConnection {
 				"routeId", pRouteId));
 		if(routeObject != null) {
 			route = new Route(
-					Integer.parseInt((String) routeObject.get("routeId")),
-					(ArrayList<Waypoint>) routeObject.get("routePoints"),
-					Float.parseFloat((String) routeObject.get("routeKm")),
-					Boolean.parseBoolean((String) routeObject.get(("routeIsTemp"))));
+					Integer.parseInt(String.valueOf(routeObject.get("routeId"))),
+					(ArrayList<BasicDBObject>) routeObject.get("routePoints"),
+					Float.parseFloat(String.valueOf(routeObject.get("routeKm"))),
+					Boolean.parseBoolean(String.valueOf(routeObject.get(("routeIsTemp")))));
 		}
 		return route;
 	}
@@ -151,15 +151,14 @@ public class HTIDatabaseConnection {
 		 */
 		DBCollection routeCollection = databaseInst.getCollection(RIDECOLL);
 		DBObject rideObject = routeCollection.findOne(new BasicDBObject(
-				"routeId", pRideId));
+				"rideId", pRideId));
 		Ride ride = new Ride(
-				Integer.parseInt((String) rideObject.get("rideId")),
-				Integer.parseInt((String) rideObject.get("rideRouteId")),
-				Integer.parseInt((String) rideObject.get("rideUserId")),
-				Double.parseDouble((String) rideObject.get("rideCalories")),
-				Double.parseDouble((String) rideObject.get("rideDuration")),
-				(Date) rideObject.get("rideStartTimestamp"),
-				(Date) rideObject.get("rideStopTimestamp"));
+				Integer.parseInt(String.valueOf(rideObject.get("rideId"))),
+				Integer.parseInt(String.valueOf(rideObject.get("rideUserId"))),
+				Integer.parseInt(String.valueOf(rideObject.get("rideRouteId"))),
+				Double.parseDouble(String.valueOf(rideObject.get("rideCalories"))),
+				Double.parseDouble(String.valueOf(rideObject.get("rideDuration"))),
+				String.valueOf(rideObject.get("rideDate")));
 
 		return ride;
 	}

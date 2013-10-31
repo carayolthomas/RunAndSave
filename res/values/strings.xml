@@ -5,7 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_section1">Running</string>
     <string name="title_section2">Display Rides</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section3">Detail Ride</string>
     <string name="messageGPS">display my  GPS position</string>
     <string name="messageWifi">display my  Wifi position</string>
     <string name="messageCache">Start recording position when click</string>
@@ -19,6 +19,7 @@
     <string name="startButton">Start running !</string>
     <string name="replaceImageViewRideRow">Image</string>
     <string name="refreshRidesList">Refresh rides list</string>
+    <string name="mapKey"></string>
     
 
 </resources>

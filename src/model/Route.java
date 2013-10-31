@@ -7,19 +7,22 @@ import logs.LogTag;
 import utils.HTIDatabaseConnection;
 import utils.Internet;
 import utils.JsonManager;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.hti.LoginActivity;
 import com.hti.MainActivity;
+import com.mongodb.BasicDBObject;
 
-public class Route {
+public class Route implements Parcelable{
 	
 	@SerializedName("routeId")
 	private int routeId;
 	
 	@SerializedName("routePoints")
-	private List<Waypoint> routePoints;
+	private List<BasicDBObject> routePoints;
 	
 	@SerializedName("routeKm")
 	private float routeKm;
@@ -32,7 +35,7 @@ public class Route {
 		this.routeId = routeId;
 	}
 
-	public Route(int routeId, List<Waypoint> routePoints, float routeKm, boolean pRouteIsTemp) {
+	public Route(int routeId, List<BasicDBObject> routePoints, float routeKm, boolean pRouteIsTemp) {
 		super();
 		this.routeId = routeId;
 		this.routePoints = routePoints;
@@ -79,11 +82,11 @@ public class Route {
 		this.routeId = routeId;
 	}
 
-	public List<Waypoint> getRoutePoints() {
+	public List<BasicDBObject> getRoutePoints() {
 		return this.routePoints;
 	}
 
-	public void setRoutePoints(List<Waypoint> routePoints) {
+	public void setRoutePoints(List<BasicDBObject> routePoints) {
 		this.routePoints = routePoints;
 	}
 
@@ -101,6 +104,37 @@ public class Route {
 
 	public void setRouteIsTemp(boolean routeIsTemp) {
 		this.routeIsTemp = routeIsTemp;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(this.routeId);
+		dest.writeFloat(this.routeKm);
+		//dest.writeTypedList(this.routePoints);
+	}
+	
+	public static final Parcelable.Creator<Route> CREATOR = new Creator<Route>() {
+		
+		@Override
+		public Route[] newArray(int size) {
+			return new Route[size];
+		}
+		
+		@Override
+		public Route createFromParcel(Parcel source) {
+			return new Route(source);
+		}
+	};
+	
+	public Route(Parcel in) {
+		this.routeId = Integer.parseInt(in.readString());
+		this.routeKm = Float.parseFloat(in.readString());
+		//in.readTypedList(this.routePoints, Waypoint.CREATOR);
 	}
 
 }

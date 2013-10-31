@@ -13,6 +13,7 @@ import model.*;
 import android.content.Context;
 
 import com.hti.*;
+import com.mongodb.BasicDBObject;
 import com.google.gson.Gson;
 
 public class JsonManager {
@@ -213,7 +214,7 @@ public class JsonManager {
 	 * @param pRouteId
 	 *            the route in which add the waypoints
 	 */
-	public static void addRouteInJson(String pFileName, Vector<Waypoint> pWayPoints, Context pContext, int pRouteId) {
+	public static void addRouteInJson(String pFileName, Vector<BasicDBObject> pWayPoints, Context pContext, int pRouteId) {
 		Gson gson = new Gson();
 		FileOutputStream cacheFile;
 		Reader reader = JsonManager.openReader(pFileName);
@@ -222,7 +223,7 @@ public class JsonManager {
 		Route route = routeSearchResult.route;
 		// if the route already exists, just add the next waypoints
 		if(route.getRouteId() == pRouteId) {
-			List<Waypoint> listToAdd = new ArrayList<Waypoint>();
+			List<BasicDBObject> listToAdd = new ArrayList<BasicDBObject>();
 			if(route.getRoutePoints() != null) {
 				listToAdd.addAll(route.getRoutePoints());
 			}
