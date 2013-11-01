@@ -7,6 +7,11 @@ package logs;
  * 
  */
 public class LogTag {
-	public static String AUTHENTIFICATION = "authentification";
+	public static String AUTHENTIFICATION = "authentification to the database";
 	public static String WRITEDB = "writeDB";
+	public static String GPS = "GPS";
+	public static String WRITEFILEGPS = "WRITEFILEGPS";
+	public static String WIFI = "WIFI";
+	public static String WRITEFILEWIFI = "WRITEFILEWIFI";
+	
 }

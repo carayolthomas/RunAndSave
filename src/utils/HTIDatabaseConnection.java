@@ -3,16 +3,14 @@ package utils;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import logs.LogTag;
 import model.Ride;
 import model.Route;
 import model.User;
-import model.WaypointDB;
 import android.util.Log;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -21,23 +19,47 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
+/**
+ * This class provides all the methods to access to the database
+ * @author hti
+ *
+ */
 public class HTIDatabaseConnection {
 
+	/** Constant for the Route collection */
 	public static final String ROUTECOLL = "Routes";
+	
+	/** Constant for the Ride collection */
 	public static final String RIDECOLL = "Rides";
+	
+	/** Constant for the User collection */
 	public static final String USERCOLL = "Users";
 
+	/** Constant for the User password protection */
 	public static final String CRYPTALGO = "SHA-1";
 
-	private String databaseUsername;
-	private String databasePassword;
-	private String databaseHote;
-	private String databaseName;
-	// private Jongo jongo;
-	private static DB databaseInst;
+	/** Database username */
+	private String mDatabaseUsername;
+	
+	/** Database password */
+	private String mDatabasePassword;
+	
+	/** Database host */
+	private String mDatabaseHost;
+	
+	/** Database name */
+	private String mDatabaseName;
+	
+	/** Database instance */
+	private static DB mDatabaseInst;
 
+	/** For the singleton pattern */
 	private static HTIDatabaseConnection me = null;
 
+	/**
+	 * GesInstance for the singleton pattern
+	 * @return HTIDatabaseConnection
+	 */
 	public static HTIDatabaseConnection getInstance() {
 		if (HTIDatabaseConnection.me == null) {
 			HTIDatabaseConnection.me = new HTIDatabaseConnection();
@@ -45,69 +67,77 @@ public class HTIDatabaseConnection {
 		return HTIDatabaseConnection.me;
 	}
 
+	/**
+	 * Default constructor
+	 */
 	private HTIDatabaseConnection() {
 		super();
-		this.databaseUsername = "thomascarayol";
-		this.databasePassword = "azerty";
-		this.databaseHote = "mongodb1.alwaysdata.com";
-		this.databaseName = "thomascarayol_hti";
+		this.mDatabaseUsername = "thomascarayol";
+		this.mDatabasePassword = "azerty";
+		this.mDatabaseHost = "mongodb1.alwaysdata.com";
+		this.mDatabaseName = "thomascarayol_hti";
 	}
 
+	/**
+	 * Establish the connection to the database
+	 * @return boolean
+	 */
 	public boolean doConnect() {
-		String uri = "mongodb://" + this.databaseUsername + ":"
-				+ this.databasePassword + "@" + this.databaseHote + "/"
-				+ this.databaseName;
-		MongoClientURI mongoClientURI = new MongoClientURI(uri);
-		MongoClient mongoClient;
-		DB db = null;
+		String lUri = "mongodb://" + this.mDatabaseUsername + ":"
+				+ this.mDatabasePassword + "@" + this.mDatabaseHost + "/"
+				+ this.mDatabaseName;
+		MongoClientURI lMongoClientURI = new MongoClientURI(lUri);
+		MongoClient lMongoClient;
+		DB lDb = null;
 		try {
-			mongoClient = new MongoClient(mongoClientURI);
-			db = mongoClient.getDB(this.databaseName);
-			if (db.authenticate(this.databaseUsername,
-					this.databasePassword.toCharArray())) {
-				Log.i("Auth", "OK");
-				this.databaseInst = db;
+			lMongoClient = new MongoClient(lMongoClientURI);
+			lDb = lMongoClient.getDB(this.mDatabaseName);
+			if (lDb.authenticate(this.mDatabaseUsername,
+					this.mDatabasePassword.toCharArray())) {
+				Log.i(LogTag.AUTHENTIFICATION, "OK");
+				mDatabaseInst = lDb;
 				return true;
 			} else {
-				Log.i("Auth", "NOK");
+				Log.i(LogTag.AUTHENTIFICATION, "NOK");
 				return false;
 			}
-			// jongo = new Jongo(db);
 		} catch (UnknownHostException e) {
-			// TODO LOG
 			e.printStackTrace();
 		}
 		return false;
 	}
 
+	/**
+	 * Insert a user in the database
+	 * @param pUser
+	 * @return errors
+	 */
 	public String insertUser(User pUser) {
-		// MongoCollection userCollection = jongo.getCollection(USERCOLL);
-		DBCollection userCollection = databaseInst.getCollection(USERCOLL);
-
-		BasicDBObject newUser;
+		DBCollection lUserCollection = mDatabaseInst.getCollection(USERCOLL);
+		BasicDBObject lNewUser;
 		try {
-			newUser = new BasicDBObject("userEmail",
+			lNewUser = new BasicDBObject("userEmail",
 					pUser.getUserEmail()).append(
 					"userPassword",
 					Encode.encode(pUser.getUserPassword(),
 							HTIDatabaseConnection.CRYPTALGO)).append("userWeight",
 					pUser.getUserWeight());
-			return userCollection.insert(newUser).getError();
+			return lUserCollection.insert(lNewUser).getError();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
-		// return userCollection.insert(pUser).getError();
 	}
 
+	/**
+	 * Update the routeId of a ride
+	 * @param pRide
+	 * @param newRouteId
+	 * @return errors
+	 */
 	public String updateRideRouteId(Ride pRide, int newRouteId) {
-		// MongoCollection rideCollection = jongo.getCollection(RIDECOLL);
-		// return
-		// rideCollection.update("{rideId: #}",pRide.getRideId()).with("{$set: {rideRouteId: #}}",
-		// newRouteId).getError();
-		DBCollection rideCollection = databaseInst.getCollection(RIDECOLL);
-		return rideCollection.update(
+		DBCollection lRideCollection = mDatabaseInst.getCollection(RIDECOLL);
+		return lRideCollection.update(
 				new BasicDBObject("rideId", pRide.getRideId()),
 				new BasicDBObject("rideRouteId", newRouteId)).getError();
 	}
@@ -116,51 +146,43 @@ public class HTIDatabaseConnection {
 	 * Return the route corresponding to the given id
 	 * 
 	 * @param pRouteId
-	 * @return
+	 * @return route matched
 	 */
+	@SuppressWarnings("unchecked")
 	public Route getRoute(int pRouteId) {
-		// MongoCollection routeCollection = jongo.getCollection(ROUTECOLL);
-		// return routeCollection.findOne("{routeId:#}",
-		// pRouteId).as(Route.class);
-		Route route = null;
-		DBCollection routeCollection = databaseInst.getCollection(ROUTECOLL);
-		DBObject routeObject = routeCollection.findOne(new BasicDBObject(
+		Route lRoute = null;
+		DBCollection lRouteCollection = mDatabaseInst.getCollection(ROUTECOLL);
+		DBObject lRouteObject = lRouteCollection.findOne(new BasicDBObject(
 				"routeId", pRouteId));
-		if(routeObject != null) {
-			route = new Route(
-					Integer.parseInt(String.valueOf(routeObject.get("routeId"))),
-					(ArrayList<BasicDBObject>) routeObject.get("routePoints"),
-					Float.parseFloat(String.valueOf(routeObject.get("routeKm"))),
-					Boolean.parseBoolean(String.valueOf(routeObject.get(("routeIsTemp")))));
+		if(lRouteObject != null) {
+			lRoute = new Route(
+					Integer.parseInt(String.valueOf(lRouteObject.get("routeId"))),
+					(ArrayList<BasicDBObject>) lRouteObject.get("routePoints"),
+					Float.parseFloat(String.valueOf(lRouteObject.get("routeKm"))),
+					Boolean.parseBoolean(String.valueOf(lRouteObject.get(("routeIsTemp")))));
 		}
-		return route;
+		return lRoute;
 	}
 
 	/**
 	 * Return the ride corresponding to the given id
 	 * 
 	 * @param pRideId
-	 * @return
+	 * @return ride matched
 	 */
 	public Ride getRide(int pRideId) {
-		// MongoCollection rideCollection = jongo.getCollection(RIDECOLL);
-		// return rideCollection.findOne("{rideId:#}", pRideId).as(Ride.class);
-		/*
-		 * private double rideCalories; private double rideDuration; private
-		 * Date rideStartTimestamp; private Date rideStopTimestamp
-		 */
-		DBCollection routeCollection = databaseInst.getCollection(RIDECOLL);
-		DBObject rideObject = routeCollection.findOne(new BasicDBObject(
+		DBCollection lRouteCollection = mDatabaseInst.getCollection(RIDECOLL);
+		DBObject lRideObject = lRouteCollection.findOne(new BasicDBObject(
 				"rideId", pRideId));
-		Ride ride = new Ride(
-				Integer.parseInt(String.valueOf(rideObject.get("rideId"))),
-				Integer.parseInt(String.valueOf(rideObject.get("rideUserId"))),
-				Integer.parseInt(String.valueOf(rideObject.get("rideRouteId"))),
-				Double.parseDouble(String.valueOf(rideObject.get("rideCalories"))),
-				Double.parseDouble(String.valueOf(rideObject.get("rideDuration"))),
-				String.valueOf(rideObject.get("rideDate")));
+		Ride lRide = new Ride(
+				Integer.parseInt(String.valueOf(lRideObject.get("rideId"))),
+				Integer.parseInt(String.valueOf(lRideObject.get("rideUserId"))),
+				Integer.parseInt(String.valueOf(lRideObject.get("rideRouteId"))),
+				Double.parseDouble(String.valueOf(lRideObject.get("rideCalories"))),
+				Double.parseDouble(String.valueOf(lRideObject.get("rideDuration"))),
+				String.valueOf(lRideObject.get("rideDate")));
 
-		return ride;
+		return lRide;
 	}
 
 	/**
@@ -169,15 +191,12 @@ public class HTIDatabaseConnection {
 	 * @param pRoute
 	 */
 	public String addRoute(Route pRoute) {
-		// MongoCollection routeCollection = jongo.getCollection(ROUTECOLL);
-		// return routeCollection.insert(pRoute).getError();
-		DBCollection routeCollection = databaseInst.getCollection(ROUTECOLL);
-		
-		BasicDBObject newRoute = new BasicDBObject("routeId", pRoute.getRouteId()).
+		DBCollection lRouteCollection = mDatabaseInst.getCollection(ROUTECOLL);
+		BasicDBObject lNewRoute = new BasicDBObject("routeId", pRoute.getRouteId()).
 											append("routePoints", pRoute.getRoutePoints()).
 											append("routeKm", pRoute.getRouteKm());
 
-		return routeCollection.insert(newRoute).getError();
+		return lRouteCollection.insert(lNewRoute).getError();
 	}
 
 	/**
@@ -187,11 +206,8 @@ public class HTIDatabaseConnection {
 	 * @param pUserId
 	 */
 	public String addRide(Ride pRide) {
-		// MongoCollection rideCollection = jongo.getCollection(RIDECOLL);
-		// return rideCollection.insert(pRide).getError();
-		DBCollection rideCollection = databaseInst.getCollection(RIDECOLL);
-
-		BasicDBObject newRide = new BasicDBObject("rideId", pRide.getRideId())
+		DBCollection lRideCollection = mDatabaseInst.getCollection(RIDECOLL);
+		BasicDBObject lNewRide = new BasicDBObject("rideId", pRide.getRideId())
 				.append("rideRouteId", pRide.getRideRouteId())
 				.append("rideCalories", pRide.getRideCalories())
 				.append("rideDuration", pRide.getRideDuration())
@@ -199,36 +215,34 @@ public class HTIDatabaseConnection {
 				.append("rideStopTimestamp", pRide.getRideStopTimestamp())
 				.append("rideUserId", pRide.getRideUserId())
 				.append("rideDate", pRide.getRideDate().toString());
-		return rideCollection.insert(newRide).getError();
+		return lRideCollection.insert(lNewRide).getError();
 	}
 
 	/**
 	 * Get all the rides of an user
 	 * 
 	 * @param pUserId
-	 * @return
+	 * @return list of rides
 	 */
 	public List<Ride> getAllUserRides() {
-		// MongoCollection rideCollection = jongo.getCollection(RIDECOLL);
-		// return rideCollection.find("{rideUserId:#}",pUserId).as(Ride.class);
-		DBCollection userCollection = databaseInst.getCollection(RIDECOLL);
-		DBCursor cursor = userCollection.find();
-		ArrayList<Ride> userRides = new ArrayList<Ride>();
+		DBCollection lUserCollection = mDatabaseInst.getCollection(RIDECOLL);
+		DBCursor lCursor = lUserCollection.find();
+		ArrayList<Ride> lUserRides = new ArrayList<Ride>();
 		try {
-			while (cursor.hasNext()) {
-				DBObject next = cursor.next();
+			while (lCursor.hasNext()) {
+				DBObject next = lCursor.next();
 				String rideId = String.valueOf(next.get("rideId"));
 				String rideRouteId = String.valueOf(next.get("rideRouteId"));
 				String rideCalories = String.valueOf(next.get("rideCalories"));
 				String rideDuration = String.valueOf(next.get("rideDuration"));
 				String rideDate = String.valueOf(next.get("rideDate"));
-				userRides.add(new Ride(Integer.parseInt(rideId), Integer.parseInt(rideRouteId), 0, Double.parseDouble(rideCalories), Double.parseDouble(rideDuration), rideDate));
+				lUserRides.add(new Ride(Integer.parseInt(rideId), Integer.parseInt(rideRouteId), 0, Double.parseDouble(rideCalories), Double.parseDouble(rideDuration), rideDate));
 			}
 		} finally {
-			cursor.close();
+			lCursor.close();
 		}
 
-		return userRides;
+		return lUserRides;
 	}
 
 	/**
@@ -236,28 +250,27 @@ public class HTIDatabaseConnection {
 	 * 
 	 * @param username
 	 * @param clearPassword
-	 * @return
+	 * @return user
 	 */
 	public User getUser(String username, String clearPassword) {
-		DBCollection userCollection = databaseInst.getCollection(USERCOLL);
-		DBObject userObject = userCollection.findOne(new BasicDBObject("userEmail",
+		DBCollection lUserCollection = mDatabaseInst.getCollection(USERCOLL);
+		DBObject lUserObject = lUserCollection.findOne(new BasicDBObject("userEmail",
 				username));
 		try {
-			// The user doesn't exist
-			if (userObject == null) {
+			/** The user doesn't exist */
+			if (lUserObject == null) {
 				return new User(username, "", 0);
 			} else {
-				// The email already exists, we suppose that he put a wrong
-				// password
+				/** The email already exists, we suppose that he put a wrong password */
 				if (!Encode.encode(clearPassword, CRYPTALGO).equalsIgnoreCase(
-						userObject.get("userPassword").toString())) {
+						lUserObject.get("userPassword").toString())) {
 					return null;
 				}
-				// The user has been found in the database
+				/** The user has been found in the database */
 				else {
-					return new User(userObject.get("userEmail").toString(),
-							userObject.get("userPassword").toString(),
-							Float.parseFloat(userObject.get("userWeight")
+					return new User(lUserObject.get("userEmail").toString(),
+							lUserObject.get("userPassword").toString(),
+							Float.parseFloat(lUserObject.get("userWeight")
 									.toString()));
 				}
 			}
@@ -267,13 +280,21 @@ public class HTIDatabaseConnection {
 		}
 	}
 	
+	/**
+	 * Get the number of routes
+	 * @return nbRoutes
+	 */
 	public int getNumberOfRoutes() {
-		DBCollection routeCollection = databaseInst.getCollection(ROUTECOLL);
-		return routeCollection.find().count();
+		DBCollection lRouteCollection = mDatabaseInst.getCollection(ROUTECOLL);
+		return lRouteCollection.find().count();
 	}
 	
+	/**
+	 * Get the number of rides
+	 * @return nbRides
+	 */
 	public int getNumberOfRides() {
-		DBCollection rideCollection = databaseInst.getCollection(RIDECOLL);
-		return rideCollection.find().count();
+		DBCollection lRideCollection = mDatabaseInst.getCollection(RIDECOLL);
+		return lRideCollection.find().count();
 	}
 }

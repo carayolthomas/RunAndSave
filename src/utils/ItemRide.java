@@ -1,27 +1,65 @@
 package utils;
 
+/**
+ * Util class for put an icon in each row of the list of rides
+ * 
+ * @author hti
+ * 
+ */
 public class ItemRide {
 
-	private String itemRideText;
-	private int itemRideIconFile;
-	
-	public ItemRide(String itemRideText, int itemRideIconFile) {
+	/** The text of a row */
+	private String mItemRideText;
+
+	/** The icon of a row */
+	private int mItemRideIconFile;
+
+	/**
+	 * Constructor used
+	 * 
+	 * @param pItemRideText
+	 * @param pItemRideIconFile
+	 */
+	public ItemRide(String pItemRideText, int pItemRideIconFile) {
 		super();
-		this.itemRideText = itemRideText;
-		this.itemRideIconFile = itemRideIconFile;
+		this.mItemRideText = pItemRideText;
+		this.mItemRideIconFile = pItemRideIconFile;
 	}
+
+	/**
+	 * Return the text of the row
+	 * 
+	 * @return string
+	 */
 	public String getItemRideText() {
-		return itemRideText;
+		return mItemRideText;
 	}
-	public void setItemRideText(String itemRideText) {
-		this.itemRideText = itemRideText;
+
+	/**
+	 * Set the text of a row
+	 * 
+	 * @param pItemRideText
+	 */
+	public void setItemRideText(String pItemRideText) {
+		this.mItemRideText = pItemRideText;
 	}
+
+	/**
+	 * Return the icon file of the row
+	 * 
+	 * @return int
+	 */
 	public int getItemRideIconFile() {
-		return itemRideIconFile;
+		return mItemRideIconFile;
 	}
-	public void setItemRideIconFile(int itemRideIconFile) {
-		this.itemRideIconFile = itemRideIconFile;
+
+	/**
+	 * Set the icon file of a row
+	 * 
+	 * @param pItemRideIconFile
+	 */
+	public void setItemRideIconFile(int pItemRideIconFile) {
+		this.mItemRideIconFile = pItemRideIconFile;
 	}
-	
-	
+
 }

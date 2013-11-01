@@ -3,14 +3,21 @@ package utils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * This class allow to encode password giving by the User (security is important
+ * !)
+ * 
+ * @author hti
+ * 
+ */
 public class Encode {
 
-	public static String encode(String password, String algorithm)
+	public static String encode(String pPassword, String pAlgorithm)
 			throws NoSuchAlgorithmException {
 		byte[] hash = null;
 		try {
-			MessageDigest md = MessageDigest.getInstance(algorithm);
-			hash = md.digest(password.getBytes());
+			MessageDigest md = MessageDigest.getInstance(pAlgorithm);
+			hash = md.digest(pPassword.getBytes());
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
