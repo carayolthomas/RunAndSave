@@ -224,7 +224,7 @@ public class MainActivity extends FragmentActivity {
 		dateStopRunning = new Date();
 		/** handle the new route */
 		Route lRouteToSave = JsonManager.getRoute(JsonManager
-				.openReader(FILENAMEWIFI)).route;
+				.openReader(FILENAMEWIFI)).mRoute;
 		taskRoute = new SaveRouteInDBTask();
 		taskRoute.execute(lRouteToSave);
 		/** handle the new ride */

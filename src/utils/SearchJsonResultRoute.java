@@ -4,11 +4,22 @@ import model.*;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SearchJsonResultRoute {	
+/**
+ * This class allows me to get a route from a JSON file
+ * 
+ * @author hti
+ * 
+ */
+public class SearchJsonResultRoute {
 	@SerializedName("route")
-	public Route route;
-	
+	public Route mRoute;
+
+	/**
+	 * Default constructor
+	 * 
+	 * @param pRoute
+	 */
 	public SearchJsonResultRoute(Route pRoute) {
-		this.route = pRoute;
+		this.mRoute = pRoute;
 	}
 }

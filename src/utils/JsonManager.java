@@ -16,8 +16,13 @@ import com.hti.*;
 import com.mongodb.BasicDBObject;
 import com.google.gson.Gson;
 
+/**
+ * Class to manage JSON files used in this application
+ * 
+ * @author thomas
+ * 
+ */
 public class JsonManager {
-
 
 	/**
 	 * Open the file in cache (read)
@@ -27,27 +32,26 @@ public class JsonManager {
 	 * @return the reader to read the file
 	 */
 	public static Reader openReader(String pFilename) {
-		Reader reader = null;
+		Reader lReader = null;
 
 		try {
-			reader = new InputStreamReader(LoginActivity.getAppContext().openFileInput(pFilename));
+			lReader = new InputStreamReader(LoginActivity.getAppContext()
+					.openFileInput(pFilename));
 		} catch (FileNotFoundException e1) {
-			FileOutputStream cacheFile;
+			FileOutputStream lCacheFile;
 			try {
-				cacheFile = LoginActivity.getAppContext().openFileOutput(pFilename,
-						Context.MODE_PRIVATE);
-				cacheFile.close();
-				reader = JsonManager.openReader(pFilename);
+				lCacheFile = LoginActivity.getAppContext().openFileOutput(
+						pFilename, Context.MODE_PRIVATE);
+				lCacheFile.close();
+				lReader = JsonManager.openReader(pFilename);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
-		return reader;
+		return lReader;
 	}
 
-
-	
 	/**
 	 * Get the number of route in cache
 	 * 
@@ -56,131 +60,147 @@ public class JsonManager {
 	 * @return the number of routes in cache
 	 */
 	public static int getNumberOfRides() {
-		Gson gson = new Gson();
+		Gson lGson = new Gson();
 		// Subjective choice in the filenale, we could open the wifi file or
 		// create only 1 file
-		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS);
-		int nb;
+		Reader lReader = JsonManager.openReader(MainActivity.FILENAMEGPS);
+		int lNb;
 		try {
-			nb = gson.fromJson(reader, SearchJsonResultRoutes.class).routes.size();
+			lNb = lGson.fromJson(lReader, SearchJsonResultRoutes.class).pRoutes
+					.size();
 		} catch (Exception e) {
-			nb = 0;
+			lNb = 0;
 			e.printStackTrace();
 		}
-		return nb;
+		return lNb;
 	}
-	
-	/*
-	 * 
+
+	/**
 	 * Handler for each Ride which will be store in Json files (3G off)
 	 * 
+	 * @param pFilename
+	 * @param pReader
+	 * @return rides
 	 */
-	
-	private static SearchJsonResultRides createRideJson(String pFilename, Reader pReader) {
+	private static SearchJsonResultRides createRideJson(String pFilename,
+			Reader pReader) {
 
-		Gson gson = new Gson();
-		SearchJsonResultRides ridesSearchResult;
+		Gson lGson = new Gson();
+		SearchJsonResultRides lRidesSearchResult;
 
-		// if the file does not exist yet
+		/** if the file does not exist yet */
 		if (pReader == null) {
-			List<Ride> rides = new Vector<Ride>();
-			ridesSearchResult = new SearchJsonResultRides(rides);
+			List<Ride> lRides = new Vector<Ride>();
+			lRidesSearchResult = new SearchJsonResultRides(lRides);
 		} else {
-			ridesSearchResult = gson.fromJson(pReader, SearchJsonResultRides.class);
+			lRidesSearchResult = lGson.fromJson(pReader,
+					SearchJsonResultRides.class);
 		}
-		return ridesSearchResult;
+		return lRidesSearchResult;
 	}
-	
-	public static void addRideInJson(String pFileName, Ride pRide, Context pContext) {
-		Gson gson = new Gson();
-		FileOutputStream cacheFile;
-		Reader reader = JsonManager.openReader(pFileName);
-		SearchJsonResultRides ridesSearchResult = JsonManager.createRideJson(pFileName, reader);
 
-		List<Ride> rides = ridesSearchResult.rides;
-		rides.add(pRide);
+	/**
+	 * Add the ride in a JSON file
+	 * 
+	 * @param pFileName
+	 * @param pRide
+	 * @param pContext
+	 */
+	public static void addRideInJson(String pFileName, Ride pRide,
+			Context pContext) {
+		Gson lGson = new Gson();
+		FileOutputStream lCacheFile;
+		Reader lReader = JsonManager.openReader(pFileName);
+		SearchJsonResultRides lRidesSearchResult = JsonManager.createRideJson(
+				pFileName, lReader);
 
-		// update the file in cache
+		List<Ride> lRides = lRidesSearchResult.mRides;
+		lRides.add(pRide);
+
+		/** update the file in cache */
 		try {
-			reader.close();
-			// transform json to string
-			String jsonstr = gson.toJson(ridesSearchResult);
-			// clear old data
+			lReader.close();
+			/** transform json to string */
+			String jsonstr = lGson.toJson(lRidesSearchResult);
+			/** clear old data */
 			pContext.deleteFile(pFileName);
-			// recreate the file with the new data
-			cacheFile = pContext.openFileOutput(pFileName, Context.MODE_PRIVATE);
-			cacheFile.write(jsonstr.getBytes());
-			cacheFile.close();
+			/** recreate the file with the new data */
+			lCacheFile = pContext.openFileOutput(pFileName,
+					Context.MODE_PRIVATE);
+			lCacheFile.write(jsonstr.getBytes());
+			lCacheFile.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-	
-	/*
+
+	/**
+	 * Handlers of the file containing all the routes which are not in the
+	 * database
 	 * 
-	 * Handlers of the file containing all the routes which are not in the database
-	 * 
+	 * @param pFilename
+	 * @param pReader
+	 * @return routes
 	 */
-	
-	private static SearchJsonResultRoutes createRoutesJson(String pFilename, Reader pReader) {
+	private static SearchJsonResultRoutes createRoutesJson(String pFilename,
+			Reader pReader) {
+		Gson lGson = new Gson();
+		SearchJsonResultRoutes lRoutesSearchResult;
 
-		Gson gson = new Gson();
-		SearchJsonResultRoutes routesSearchResult;
-
-		// if the file does not exist yet
+		/** if the file does not exist yet */
 		if (pReader == null) {
-			List<Route> routes = new Vector<Route>();
-			routesSearchResult = new SearchJsonResultRoutes(routes);
+			List<Route> lRoutes = new Vector<Route>();
+			lRoutesSearchResult = new SearchJsonResultRoutes(lRoutes);
 		} else {
-			routesSearchResult = gson.fromJson(pReader, SearchJsonResultRoutes.class);
+			lRoutesSearchResult = lGson.fromJson(pReader,
+					SearchJsonResultRoutes.class);
 		}
-		return routesSearchResult;
+		return lRoutesSearchResult;
 	}
-	
-	public static void addRoutesInJson(String pFileName, Route pRoute, Context pContext) {
-		Gson gson = new Gson();
-		FileOutputStream cacheFile;
-		Reader reader = JsonManager.openReader(pFileName);
-		SearchJsonResultRoutes routesSearchResult = JsonManager.createRoutesJson(pFileName, reader);
 
-		List<Route> routes = routesSearchResult.routes;
-		routes.add(pRoute);
+	/**
+	 * Add a route in JSON file
+	 * 
+	 * @param pFileName
+	 * @param pRoute
+	 * @param pContext
+	 */
+	public static void addRoutesInJson(String pFileName, Route pRoute,
+			Context pContext) {
+		Gson lGson = new Gson();
+		FileOutputStream lCacheFile;
+		Reader lReader = JsonManager.openReader(pFileName);
+		SearchJsonResultRoutes lRoutesSearchResult = JsonManager
+				.createRoutesJson(pFileName, lReader);
 
-		// update the file in cache
+		List<Route> lRoutes = lRoutesSearchResult.pRoutes;
+		lRoutes.add(pRoute);
+
+		/** update the file in cache */
 		try {
-			reader.close();
-			// transform json to string
-			String jsonstr = gson.toJson(routesSearchResult);
-			// clear old data
+			lReader.close();
+			/** transform json to string */
+			String lJsonstr = lGson.toJson(lRoutesSearchResult);
+			/** clear old data */
 			pContext.deleteFile(pFileName);
-			// recreate the file with the new data
-			cacheFile = pContext.openFileOutput(pFileName, Context.MODE_PRIVATE);
-			cacheFile.write(jsonstr.getBytes());
-			cacheFile.close();
+			/** recreate the file with the new data */
+			lCacheFile = pContext.openFileOutput(pFileName,
+					Context.MODE_PRIVATE);
+			lCacheFile.write(lJsonstr.getBytes());
+			lCacheFile.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	
-	/*
-	 * 
-	 * Handlers of JSON files while someone is running
-	 * 
-	 */
-	
 	/**
 	 * Create the json for a temporary route
 	 * 
@@ -190,20 +210,22 @@ public class JsonManager {
 	 *            the reader to read the file
 	 * @return
 	 */
-	private static SearchJsonResultRoute createRouteJson(String pFilename, Reader pReader) {
+	private static SearchJsonResultRoute createRouteJson(String pFilename,
+			Reader pReader) {
 
-		Gson gson = new Gson();
-		SearchJsonResultRoute routeSearchResult = gson.fromJson(pReader, SearchJsonResultRoute.class);
-		if(routeSearchResult == null) {
-			Route route = new Route(MainActivity.nbRoutes, null, 0, true);
-			routeSearchResult = new SearchJsonResultRoute(route);
+		Gson lGson = new Gson();
+		SearchJsonResultRoute lRouteSearchResult = lGson.fromJson(pReader,
+				SearchJsonResultRoute.class);
+		if (lRouteSearchResult == null) {
+			Route lRoute = new Route(MainActivity.nbRoutes, null, 0, true);
+			lRouteSearchResult = new SearchJsonResultRoute(lRoute);
 		}
-		return routeSearchResult;
+		return lRouteSearchResult;
 	}
-	
+
 	/**
-	 * Add the waypoints to a route in the file in cache while the run is started
-	 * This file will contain only the temporary route
+	 * Add the waypoints to a route in the file in cache while the run is
+	 * started This file will contain only the temporary route
 	 * 
 	 * @param pFileName
 	 *            the file in cache
@@ -214,45 +236,46 @@ public class JsonManager {
 	 * @param pRouteId
 	 *            the route in which add the waypoints
 	 */
-	public static void addRouteInJson(String pFileName, Vector<BasicDBObject> pWayPoints, Context pContext, int pRouteId) {
-		Gson gson = new Gson();
-		FileOutputStream cacheFile;
-		Reader reader = JsonManager.openReader(pFileName);
-		SearchJsonResultRoute routeSearchResult = JsonManager.createRouteJson(pFileName, reader);
+	public static void addRouteInJson(String pFileName,
+			Vector<BasicDBObject> pWayPoints, Context pContext, int pRouteId) {
+		Gson lGson = new Gson();
+		FileOutputStream lCacheFile;
+		Reader lReader = JsonManager.openReader(pFileName);
+		SearchJsonResultRoute lRouteSearchResult = JsonManager.createRouteJson(
+				pFileName, lReader);
 
-		Route route = routeSearchResult.route;
-		// if the route already exists, just add the next waypoints
-		if(route.getRouteId() == pRouteId) {
+		Route lRoute = lRouteSearchResult.mRoute;
+		/** if the route already exists, just add the next waypoints */
+		if (lRoute.getRouteId() == pRouteId) {
 			List<BasicDBObject> listToAdd = new ArrayList<BasicDBObject>();
-			if(route.getRoutePoints() != null) {
-				listToAdd.addAll(route.getRoutePoints());
+			if (lRoute.getRoutePoints() != null) {
+				listToAdd.addAll(lRoute.getRoutePoints());
 			}
 			listToAdd.addAll(pWayPoints);
-			route.setRoutePoints(listToAdd);
-		} 
-		// else create the route
+			lRoute.setRoutePoints(listToAdd);
+		}
+		/** else create the route */
 		else {
-			route = new Route(MainActivity.nbRoutes, pWayPoints, 0, true);
+			lRoute = new Route(MainActivity.nbRoutes, pWayPoints, 0, true);
 		}
 
-		// update the file in cache
+		/** update the file in cache */
 		try {
-			reader.close();
-			// transform json to string
-			String jsonstr = gson.toJson(routeSearchResult);
-			// clear old data
+			lReader.close();
+			/** transform json to string */
+			String lJsonstr = lGson.toJson(lRouteSearchResult);
+			/** clear old data */
 			pContext.deleteFile(pFileName);
 			pWayPoints.clear();
-			// recreate the file with the new data
-			cacheFile = pContext.openFileOutput(pFileName, Context.MODE_PRIVATE);
-			cacheFile.write(jsonstr.getBytes());
-			cacheFile.close();
+			/** recreate the file with the new data */
+			lCacheFile = pContext.openFileOutput(pFileName,
+					Context.MODE_PRIVATE);
+			lCacheFile.write(lJsonstr.getBytes());
+			lCacheFile.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -266,8 +289,8 @@ public class JsonManager {
 	 * @return the route in cache
 	 */
 	public static SearchJsonResultRoute getRoute(Reader pReader) {
-		Gson gson = new Gson();
-		return gson.fromJson(pReader, SearchJsonResultRoute.class);
+		Gson lGson = new Gson();
+		return lGson.fromJson(pReader, SearchJsonResultRoute.class);
 	}
 
 	/**
@@ -278,19 +301,20 @@ public class JsonManager {
 	 * @return the number of routes in cache
 	 */
 	public static int getNumberOfRoutes() {
-		Gson gson = new Gson();
-		// Subjective choice in the filenale, we could open the wifi file or
-		// create only 1 file
-		Reader reader = JsonManager.openReader(MainActivity.FILENAMEGPS);
-		int nb;
+		Gson lGson = new Gson();
+		/**
+		 * Subjective choice in the filenale, we could open the wifi file or
+		 * create only 1 file
+		 */
+		Reader lReader = JsonManager.openReader(MainActivity.FILENAMEGPS);
+		int lNb;
 		try {
-			nb = gson.fromJson(reader, SearchJsonResultRoutes.class).routes.size();
+			lNb = lGson.fromJson(lReader, SearchJsonResultRoutes.class).pRoutes
+					.size();
 		} catch (Exception e) {
-			nb = 0;
+			lNb = 0;
 			e.printStackTrace();
 		}
-		return nb;
+		return lNb;
 	}
-	
-	
 }

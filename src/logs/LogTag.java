@@ -13,5 +13,6 @@ public class LogTag {
 	public static String WRITEFILEGPS = "WRITEFILEGPS";
 	public static String WIFI = "WIFI";
 	public static String WRITEFILEWIFI = "WRITEFILEWIFI";
+	public static String LOCATIONLISTENER = "LOCATIONLISTENER";
 	
 }

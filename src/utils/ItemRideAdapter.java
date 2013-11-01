@@ -11,47 +11,71 @@ import android.widget.TextView;
 
 import com.hti.R;
 
-public class ItemRideAdapter extends ArrayAdapter<String>{
-	
-	private final Context context;
-	private final String[] Ids;
-    private final int rowResourceId;
+/**
+ * This class is associated with the ItemRide one in order to display an icon on
+ * each row of a list
+ * 
+ * @author hti
+ * 
+ */
+public class ItemRideAdapter extends ArrayAdapter<String> {
 
-    public ItemRideAdapter(Context context, int textViewResourceId, String[] objects) {
+	/** The context */
+	private final Context mContext;
 
-        super(context, textViewResourceId);
+	/** Ids */
+	private final String[] mIds;
 
-        this.context = context;
-        this.Ids = objects;
-        this.rowResourceId = textViewResourceId;
+	/** Row ressource id */
+	private final int mRowResourceId;
 
-    }
+	/**
+	 * Default constructor
+	 * 
+	 * @param pContext
+	 * @param pTextViewResourceId
+	 * @param pObjects
+	 */
+	public ItemRideAdapter(Context pContext, int pTextViewResourceId,
+			String[] pObjects) {
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+		super(pContext, pTextViewResourceId);
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.mContext = pContext;
+		this.mIds = pObjects;
+		this.mRowResourceId = pTextViewResourceId;
 
-        View rowView = inflater.inflate(rowResourceId, parent, false);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.imageViewRideRow);
-        TextView textView = (TextView) rowView.findViewById(R.id.textViewRideRow);
+	}
 
-        ItemRide item = new ItemRide(Ids[position], R.drawable.icon_list_ride);
-        
-        textView.setText(item.getItemRideText());
-        textView.setTextColor(Color.BLACK);
-        imageView.setImageResource(item.getItemRideIconFile());
-        return rowView;
+	@Override
+	public View getView(int pPosition, View pConvertView, ViewGroup pParent) {
 
-    }
-    
-    @Override
-    public int getCount() {
-        return Ids.length;
-    }
-    
-    @Override
-    public String getItem(int position) {
-        return Ids[position];
-    }
+		LayoutInflater lInflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		View rowView = lInflater.inflate(mRowResourceId, pParent, false);
+		ImageView lImageView = (ImageView) rowView
+				.findViewById(R.id.imageViewRideRow);
+		TextView lTextView = (TextView) rowView
+				.findViewById(R.id.textViewRideRow);
+
+		ItemRide lItem = new ItemRide(mIds[pPosition],
+				R.drawable.icon_list_ride);
+
+		lTextView.setText(lItem.getItemRideText());
+		lTextView.setTextColor(Color.BLACK);
+		lImageView.setImageResource(lItem.getItemRideIconFile());
+		return rowView;
+
+	}
+
+	@Override
+	public int getCount() {
+		return mIds.length;
+	}
+
+	@Override
+	public String getItem(int pPosition) {
+		return mIds[pPosition];
+	}
 }
