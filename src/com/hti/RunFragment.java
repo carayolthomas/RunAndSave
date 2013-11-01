@@ -7,39 +7,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+/**
+ * Fragment from the MainActivity which allow the user to start/stop a ride and
+ * check his personal information
+ * 
+ * @author hti
+ * 
+ */
 public class RunFragment extends Fragment {
-	
-	public Button buttonRun;
-	public Button buttonDisplay;
-	public Button buttonDisplayWifi;
-	public Button buttonClean;
-	public static String startText = "Start running !";
-	public static String stopText = "Stop running !";
-	private boolean isStart = false;
-	
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
-		View view = inflater.inflate(R.layout.fragment_main_run, container, false);
-		
-		
-		buttonRun = (Button) view.findViewById(R.id.buttonRun);
-		buttonRun.setOnClickListener(
-				new View.OnClickListener() {
-					public void onClick(View view) {
-						if(buttonRun.getText().equals(startText)) {
-							//TODO autre fonction à appeller avec le timer
-							MainActivity.startLogPosition();
-							buttonRun.setText(stopText);
-							isStart = true ;
-						} else {
-							MainActivity.stopLogPosition();
-							buttonRun.setText(startText);
-							isStart = false ;
-						}
-					}
-				});
-		
-		
-		return view;
+
+	/** Button run */
+	public Button mButtonRun;
+
+	/** Allows me to change the text */
+	public static String mStartText = "Let's run !";
+	public static String mStopText = "I'm done !";
+
+	/** In order to know if the user start a run */
+	private boolean mIsStart = false;
+
+	public View onCreateView(LayoutInflater pInflater, ViewGroup pContainer,
+			Bundle pSavedInstanceState) {
+		View lView = pInflater.inflate(R.layout.fragment_main_run, pContainer,
+				false);
+
+		mButtonRun = (Button) lView.findViewById(R.id.buttonRun);
+		mButtonRun.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				if (!mIsStart) {
+					MainActivity.startLogPosition();
+					mButtonRun.setText(mStopText);
+					mIsStart = true;
+				} else {
+					MainActivity.stopLogPosition();
+					mButtonRun.setText(mStartText);
+					mIsStart = false;
+				}
+			}
+		});
+
+		return lView;
 	}
 }

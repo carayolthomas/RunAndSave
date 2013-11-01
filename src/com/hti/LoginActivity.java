@@ -24,33 +24,35 @@ import android.widget.TextView;
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
+ * 
+ * @author hti
  */
 public class LoginActivity extends Activity {
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
 	private UserLoginTask mAuthTask = null;
-	
-	// We store the User connected
+
+	/** We store the User connected */
 	private static User mUser;
 
-	// Values for email and password at the time of the login attempt.
+	/** Values for email and password at the time of the login attempt. */
 	private String mEmail;
 	private String mPassword;
 
-	// UI references.
+	/** UI references. */
 	private EditText mEmailView;
 	private EditText mPasswordView;
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
-	
-	// Intent tags
+
+	/** Intent tags */
 	public static String EXTRA_EMAIL = "user_login";
 	public static String EXTRA_PASSWORD = "user_password";
 	public static String EXTRA_WEIGHT = "user_weight";
-	
-	//The context
+
+	/** The context */
 	private static Context mApplicationContext;
 	private static Context mActivityContext;
 
@@ -61,7 +63,7 @@ public class LoginActivity extends Activity {
 		LoginActivity.mActivityContext = this;
 		setContentView(R.layout.activity_login);
 
-		// Set up the login form.
+		/** Set up the login form. */
 		mEmailView = (EditText) findViewById(R.id.email);
 		mEmailView.setText(mEmail);
 
@@ -109,18 +111,18 @@ public class LoginActivity extends Activity {
 			return;
 		}
 
-		// Reset errors.
+		/** Reset errors. */
 		mEmailView.setError(null);
 		mPasswordView.setError(null);
 
-		// Store values at the time of the login attempt.
+		/** Store values at the time of the login attempt. */
 		mEmail = mEmailView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
 
 		boolean cancel = false;
 		View focusView = null;
 
-		// Check for a valid password.
+		/** Check for a valid password. */
 		if (TextUtils.isEmpty(mPassword)) {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
@@ -131,7 +133,7 @@ public class LoginActivity extends Activity {
 			cancel = true;
 		}
 
-		// Check for a valid email address.
+		/** Check for a valid email address. */
 		if (TextUtils.isEmpty(mEmail)) {
 			mEmailView.setError(getString(R.string.error_field_required));
 			focusView = mEmailView;
@@ -143,12 +145,16 @@ public class LoginActivity extends Activity {
 		}
 
 		if (cancel) {
-			// There was an error; don't attempt login and focus the first
-			// form field with an error.
+			/**
+			 * There was an error; don't attempt login and focus the first form
+			 * field with an error.
+			 */
 			focusView.requestFocus();
 		} else {
-			// Show a progress spinner, and kick off a background task to
-			// perform the user login attempt.
+			/**
+			 * Show a progress spinner, and kick off a background task to
+			 * perform the user login attempt.
+			 */
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
 			mAuthTask = new UserLoginTask();
@@ -161,9 +167,6 @@ public class LoginActivity extends Activity {
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 			int shortAnimTime = getResources().getInteger(
 					android.R.integer.config_shortAnimTime);
@@ -190,8 +193,6 @@ public class LoginActivity extends Activity {
 						}
 					});
 		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
 			mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
 			mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
@@ -204,27 +205,31 @@ public class LoginActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// Connection to the database
-			HTIDatabaseConnection htiDatabaseConnection = HTIDatabaseConnection.getInstance();
-			if(htiDatabaseConnection.doConnect()) {
-				mUser = htiDatabaseConnection.getUser(mEmail, mPassword);
-				if(mUser == null) {
-					Log.e(LogTag.AUTHENTIFICATION, "Issue during the authentification of the user");
-					Log.i(LogTag.AUTHENTIFICATION, "Attempt to register");
+			/** Connection to the database */
+			HTIDatabaseConnection lHtiDatabaseConnection = HTIDatabaseConnection
+					.getInstance();
+			if (lHtiDatabaseConnection.doConnect()) {
+				mUser = lHtiDatabaseConnection.getUser(mEmail, mPassword);
+				if (mUser == null) {
+					Log.e(LogTag.AUTHENTIFICATION,
+							"Issue during the authentification of the user");
 				} else {
-					if(!mUser.getUserEmail().isEmpty() && mUser.getUserPassword().isEmpty()) {
+					if (!mUser.getUserEmail().isEmpty()
+							&& mUser.getUserPassword().isEmpty()) {
 						Log.i(LogTag.AUTHENTIFICATION, "New user to register");
 						mUser.setUserPassword(mPassword);
-						htiDatabaseConnection.insertUser(mUser);
+						lHtiDatabaseConnection.insertUser(mUser);
 						goToMainActivity();
-						
+
 					} else {
-						Log.i(LogTag.AUTHENTIFICATION, "Authentification successfull");
+						Log.i(LogTag.AUTHENTIFICATION,
+								"Authentification successfull");
 						goToMainActivity();
 					}
 				}
 			} else {
-				Log.e(LogTag.AUTHENTIFICATION, "Problem during the authentification into the database");
+				Log.e(LogTag.AUTHENTIFICATION,
+						"Problem during the authentification into the database");
 				return false;
 			}
 			return true;
@@ -234,7 +239,6 @@ public class LoginActivity extends Activity {
 		protected void onPostExecute(final Boolean success) {
 			mAuthTask = null;
 			showProgress(false);
-
 			if (success) {
 				finish();
 			} else {
@@ -250,20 +254,33 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 		}
 	}
-	
+
+	/**
+	 * Method to go to the main activity giving parameters
+	 */
 	public void goToMainActivity() {
-		Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-		intent.putExtra(EXTRA_EMAIL, mUser.getUserEmail());
-		intent.putExtra(EXTRA_PASSWORD, mUser.getUserPassword());
-		intent.putExtra(EXTRA_WEIGHT, String.valueOf(mUser.getUserWeight()));
-		startActivity(intent);
+		Intent lIntent = new Intent(LoginActivity.this, MainActivity.class);
+		lIntent.putExtra(EXTRA_EMAIL, mUser.getUserEmail());
+		lIntent.putExtra(EXTRA_PASSWORD, mUser.getUserPassword());
+		lIntent.putExtra(EXTRA_WEIGHT, String.valueOf(mUser.getUserWeight()));
+		startActivity(lIntent);
 		finish();
 	}
-	
+
+	/**
+	 * Get the Application context
+	 * 
+	 * @return context
+	 */
 	public static Context getAppContext() {
 		return LoginActivity.mApplicationContext;
 	}
-	
+
+	/**
+	 * Get the Activity context
+	 * 
+	 * @return context
+	 */
 	public static Context getActContext() {
 		return LoginActivity.mActivityContext;
 	}

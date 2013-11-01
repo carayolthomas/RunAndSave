@@ -21,77 +21,101 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 
+/**
+ * MainActivity which provide the three fragment of this application
+ * 
+ * @author hti
+ * 
+ */
 public class MainActivity extends FragmentActivity {
 
+	/** The size of the buffer which allow me to store the position of the user */
 	public static final int BUFFERSIZE = 10;
-	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
+
+	/** Constant key for the route to display */
 	public final static String ROUTE_TO_DISPLAY = "routeToDisplay";
-	/*
-	 * Ces deux fichiers contiennent toutes mes routes
-	 */
+
+	/** File name to store the GPS values */
 	public static final String FILENAMEGPS = "cacheGPS.json";
+
+	/** File name to store the position values from the Internet */
 	public static final String FILENAMEWIFI = "cacheWifi.json";
+
+	/** File to store rides */
 	public static final String FILENAMERIDE = "rides.json";
+
+	/** File to store routes */
 	public static final String FILENAMEROUTE = "routes.json";
+
+	/** Number of rides for the user connected */
 	public static int nbRides = 0;
+
+	/** Number of routes for the user connected */
 	public static int nbRoutes = 0;
-	public static Date dateStartRunning ;
-	public static Date dateStopRunning ;
+
+	/** Start date of the current ride */
+	public static Date dateStartRunning;
+
+	/** Stop date of the current ride */
+	public static Date dateStopRunning;
+
+	/** Connected to Internet ? */
 	public static boolean isConnectedToInternet;
-	//User fictif en attendant le login
-	public static User userConnected ;
-	
-	//AsyncTasks to call
+
+	/** The user connected */
+	public static User userConnected;
+
+	/** Asynchronous task to save the route in DB */
 	private static SaveRouteInDBTask taskRoute;
+
+	/** Asynchronous task to save the ride in DB */
 	private static SaveRideInDBTask taskRide;
+
+	/** Asynchronous task to get the number of routes & rides in the DB */
 	private static GetCurrentIdsTask taskIds;
-	
-	//My Fragments
+
+	/** RideResultFragment */
 	public static RideResultFragment rideResultFragment;
+
+	/** RunFragment */
 	public static RunFragment runFragment;
-	public static DisplayMapActivity displayMapFragment;
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
-	 * will keep every loaded fragment in memory. If this becomes too memory
-	 * intensive, it may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
+
+	/** DisplayMapActivity */
+	public static DisplayMapActivity displayMapActivity;
+
+	/** SectionsPagerAdapter */
 	public static SectionsPagerAdapter mSectionsPagerAdapter;
 
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
+	/** The ViewPager that will host the section contents. */
 	public static ViewPager mViewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		// Get the User thanks to the Intent
+
+		/** Get the User thanks to the Intent */
 		Intent userIntent = getIntent();
-		if(userIntent != null) {
-			userConnected = new User(userIntent.getStringExtra(LoginActivity.EXTRA_EMAIL),
-									 userIntent.getStringExtra(LoginActivity.EXTRA_PASSWORD),
-									 Float.parseFloat(userIntent.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
-			Log.i("TEST", userConnected.toString());
+		if (userIntent != null) {
+			userConnected = new User(
+					userIntent.getStringExtra(LoginActivity.EXTRA_EMAIL),
+					userIntent.getStringExtra(LoginActivity.EXTRA_PASSWORD),
+					Float.parseFloat(userIntent
+							.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
 		}
-		
-		//Manage the fragment
-		//displayMapFragment = new DisplayMapFragment();
-		
-		//Update ids
+
+		/** Update nbRoutes & nbRides */
 		taskIds = new GetCurrentIdsTask();
 		taskIds.execute();
-		
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the app.
+
+		/**
+		 * Create the adapter that will return a fragment for each of the three
+		 * primary sections of the app.
+		 */
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
 				getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter.
+		/** Set up the ViewPager with the sections adapter. */
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -99,7 +123,9 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		/**
+		 * Inflate the menu; this adds items to the action bar if it is present.
+		 */
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -116,35 +142,33 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			// getItem is called to instantiate the fragment for the given page.
-			// Return a DummySectionFragment (defined as a static inner class
-			// below) with the page number as its lone argument.
-			if(position == 0) {
+			if (position == 0) {
 				runFragment = new RunFragment();
 				Bundle args = new Bundle();
 				runFragment.setArguments(args);
 				return runFragment;
 			}
-			if(position == 1) {
+			if (position == 1) {
 				rideResultFragment = new RideResultFragment();
 				Bundle args = new Bundle();
-				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+				// args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position
+				// + 1);
 				rideResultFragment.setArguments(args);
 				return rideResultFragment;
 			}
-			/*if(position == 2) {
-				displayMapFragment = new DisplayMapFragment();
-				Bundle args = new Bundle();
-				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-				displayMapFragment.setArguments(args);
-				return displayMapFragment;
-			}*/
+			/*
+			 * if(position == 2) { displayMapFragment = new
+			 * DisplayMapFragment(); Bundle args = new Bundle();
+			 * //args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position +
+			 * 1); displayMapFragment.setArguments(args); return
+			 * displayMapFragment; }
+			 */
 			return null;
 		}
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
+			// Show 2 total pages.
 			return 2;
 		}
 
@@ -163,105 +187,107 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	/*
-	 * Gestion du tracking GPS & WIFI
+	/**
+	 * Tracking handle ON
 	 */
-    public static void startLogPosition() {
-    	//Nettoyage des fichiers cache
-    	cleanCacheFiles();
-		//StartWritingPositionInCache
-    	startWritingPositionInCache();
-    	// start chrono
-    	dateStartRunning = new Date();
-    }
+	public static void startLogPosition() {
+		/** Clean cache files */
+		cleanCacheFiles();
+		/** StartWritingPositionInCache */
+		startWritingPositionInCache();
+		/** Start chrono */
+		dateStartRunning = new Date();
+	}
 
+	/**
+	 * Clean the files in the cache
+	 */
 	private static void cleanCacheFiles() {
-		if(LoginActivity.getAppContext().deleteFile(MainActivity.FILENAMEGPS)) {
+		if (LoginActivity.getAppContext().deleteFile(MainActivity.FILENAMEGPS)) {
 			Log.i("Delete file", "FILENAMEGPS file has been deleted");
 		} else {
 			Log.w("Delete file", "Problem deleting FILENAMEGPS file");
 		}
-		if(LoginActivity.getAppContext().deleteFile(MainActivity.FILENAMEWIFI)) {
+		if (LoginActivity.getAppContext().deleteFile(MainActivity.FILENAMEWIFI)) {
 			Log.i("Delete file", "FILENAMEWIFI file has been deleted");
 		} else {
 			Log.w("Delete file", "Problem deleting FILENAMEWIFI file");
 		}
 	}
 
-    public static void stopLogPosition() {
-    	stopWritingPositionInCache();
-    	// stop chrono
-    	dateStopRunning = new Date();
-    	// handle the new route
-    	Route routeToSave = JsonManager.getRoute(JsonManager.openReader(FILENAMEWIFI)).route;
-    	taskRoute = new SaveRouteInDBTask();
-    	taskRoute.execute(routeToSave);
-    	// handle the new ride
-    	Ride rideToSave = new Ride(nbRides, nbRoutes, 0, dateStartRunning, dateStopRunning);
-    	rideToSave.computeRide();
-    	taskRide = new SaveRideInDBTask();
-    	taskRide.execute(rideToSave);
-    	// modify temp id's
-    	nbRides++;
-    	nbRoutes++;
-    }
+	/**
+	 * Tracking handle OFF
+	 */
+	public static void stopLogPosition() {
+		stopWritingPositionInCache();
+		/** Stop chrono */
+		dateStopRunning = new Date();
+		/** handle the new route */
+		Route lRouteToSave = JsonManager.getRoute(JsonManager
+				.openReader(FILENAMEWIFI)).route;
+		taskRoute = new SaveRouteInDBTask();
+		taskRoute.execute(lRouteToSave);
+		/** handle the new ride */
+		Ride lRideToSave = new Ride(nbRides, nbRoutes, 0, dateStartRunning,
+				dateStopRunning);
+		lRideToSave.computeRide();
+		taskRide = new SaveRideInDBTask();
+		taskRide.execute(lRideToSave);
+		/** modify id's */
+		nbRides++;
+		nbRoutes++;
+	}
 
-    public static void startWritingPositionInCache() {
+	/**
+	 * Enable the GPS tracking
+	 */
+	public static void startWritingPositionInCache() {
 		GpsTracking gpst = new GpsTracking();
 		gpst.startTracking();
 		gpst.startRepeatingTask();
 	}
 
-    public static void stopWritingPositionInCache() {
+	/**
+	 * Disable the GPS tracking
+	 */
+	public static void stopWritingPositionInCache() {
 		GpsTracking gpst = new GpsTracking();
 		gpst.stopTracking();
 		gpst.stopRepeatingTask();
 	}
 
-    /*
-     * Gestion des Rides et Routes
-     */
-    public static void associateRideToRoute(Route pRouteId, Ride pRide) {
-
-	}
-
-	public static void associateOldRouteIdWithNewId() {
-
-	}
-	
 	/**
 	 * AsyncTask save Route in Database
 	 */
-	
 	public static class SaveRouteInDBTask extends AsyncTask<Route, Void, Void> {
 		@Override
 		protected Void doInBackground(Route... params) {
-			if(params[0] != null) {
+			if (params[0] != null) {
 				params[0].saveRoute();
 			} else {
-				Log.e(LogTag.WRITEDB, "Problem while saving the route in the database, maybe the route is null");
+				Log.e(LogTag.WRITEDB,
+						"Problem while saving the route in the database, maybe the route is null");
 			}
 			return null;
 		}
 	}
-	
-	
+
 	/**
 	 * AsyncTask save Ride on Database
 	 */
 	public static class SaveRideInDBTask extends AsyncTask<Ride, Void, Void> {
 		@Override
 		protected Void doInBackground(Ride... params) {
-			if(params[0] != null) {
+			if (params[0] != null) {
 				params[0].saveRide();
 			} else {
-				Log.e(LogTag.WRITEDB, "Problem while saving the ride in the database, maybe the ride is null");
+				Log.e(LogTag.WRITEDB,
+						"Problem while saving the ride in the database, maybe the ride is null");
 			}
 			return null;
 		}
 	}
-	
-	
+
 	/**
 	 * AsyncTask get current routeId & rideId
 	 */
@@ -269,9 +295,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			nbRides = HTIDatabaseConnection.getInstance().getNumberOfRides();
-			//nbRides = nbRides == 0 ? 0 : nbRides + 1;
 			nbRoutes = HTIDatabaseConnection.getInstance().getNumberOfRoutes();
-			//nbRoutes = nbRoutes == 0 ? 0 : nbRoutes + 1;
 			return null;
 		}
 	}

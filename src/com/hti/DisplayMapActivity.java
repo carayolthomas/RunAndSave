@@ -55,7 +55,7 @@ public class DisplayMapActivity extends Activity {
 		Intent lIntent = getIntent();
 		mRouteToDisplay = lIntent
 				.getParcelableExtra(MainActivity.ROUTE_TO_DISPLAY);
-		mRouteToDisplay = RideResultFragment.routeInfos;
+		mRouteToDisplay = RideResultFragment.mRouteInfos;
 
 		/** Get the map */
 		mMapGoogle = ((MapFragment) getFragmentManager().findFragmentById(
