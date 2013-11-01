@@ -9,7 +9,7 @@ import java.util.List;
 import model.Ride;
 import model.Route;
 import model.User;
-import model.Waypoint;
+import model.WaypointDB;
 import android.util.Log;
 
 import com.mongodb.BasicDBList;

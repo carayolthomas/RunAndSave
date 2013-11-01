@@ -8,149 +8,197 @@ import java.util.Locale;
 import utils.HTIDatabaseConnection;
 import utils.Internet;
 import utils.JsonManager;
-import android.content.Context;
 
 import com.hti.LoginActivity;
 import com.hti.MainActivity;
 
+/**
+ * Ride class for describing what is a Ride and store all the information
+ * concerning a Ride like Calories & TimeStamp
+ * 
+ * @author hti
+ */
 public class Ride {
-	private int rideId;
-	private int rideRouteId;
-	private int rideUserId;
-	private double rideCalories;
-	private double rideDuration;
-	private Date rideStartTimestamp;
-	private Date rideStopTimestamp;
-	private String rideDate;
 
-	
-	public Ride(int rideId, int rideRouteId, int rideUserId,
-			double rideCalories, double rideDuration, Date rideStartTimestamp,
-			Date rideStopTimestamp) {
+	/** The id of a ride */
+	private int mRideId;
+
+	/** The id of the route associated to the ride */
+	private int mRideRouteId;
+
+	/** The id of the user associated to the ride */
+	private int mRideUserId;
+
+	/** Number of calories burnt during this ride */
+	private double mRideCalories;
+
+	/** The duration of the ride */
+	private double mRideDuration;
+
+	/** Ride start time */
+	private Date mRideStartTimestamp;
+
+	/** Ride stop time */
+	private Date mRideStopTimestamp;
+
+	/** Ride date */
+	private String mRideDate;
+
+	/**
+	 * Constructor used when the user end the ride
+	 * 
+	 * @param pRideId
+	 * @param pRideRouteId
+	 * @param pRideCalories
+	 * @param pRideStartTimestamp
+	 * @param pRideStopTimestamp
+	 */
+	public Ride(int pRideId, int pRideRouteId, double pRideCalories,
+			Date pRideStartTimestamp, Date pRideStopTimestamp) {
 		super();
-		this.rideId = rideId;
-		this.rideRouteId = rideRouteId;
-		this.rideUserId = rideUserId;
-		this.rideCalories = rideCalories;
-		this.rideDuration = rideDuration;
-		this.rideStartTimestamp = rideStartTimestamp;
-		this.rideStopTimestamp = rideStopTimestamp;
-		
+		this.mRideId = pRideId;
+		this.mRideRouteId = pRideRouteId;
+		this.mRideCalories = pRideCalories;
+		this.mRideStartTimestamp = pRideStartTimestamp;
+		this.mRideStopTimestamp = pRideStopTimestamp;
 	}
 
-	public Ride(int rideId, int rideRouteId, double rideCalories,
-			Date rideStartTimestamp, Date rideStopTimestamp) {
+	/**
+	 * Constructor used for the communication with the database
+	 * 
+	 * @param pRideId
+	 * @param pRideUserId
+	 * @param pRideRouteId
+	 * @param pRideCalories
+	 * @param pRideDuration
+	 * @param pRideDate
+	 */
+	public Ride(int pRideId, int pRideUserId, int pRideRouteId,
+			double pRideCalories, double pRideDuration, String pRideDate) {
 		super();
-		this.rideId = rideId;
-		this.rideRouteId = rideRouteId;
-		this.rideCalories = rideCalories;
-		this.rideStartTimestamp = rideStartTimestamp;
-		this.rideStopTimestamp = rideStopTimestamp;
-	}
-	
-	
-
-	public Ride(int rideId, int rideUserId, int rideRouteId,
-			double rideCalories, double rideDuration, String rideDate) {
-		super();
-		this.rideId = rideId;
-		this.rideRouteId = rideRouteId;
-		this.rideUserId = rideUserId;
-		this.rideCalories = rideCalories;
-		this.rideDuration = rideDuration;
-		this.rideDate = rideDate;
+		this.mRideId = pRideId;
+		this.mRideRouteId = pRideRouteId;
+		this.mRideUserId = pRideUserId;
+		this.mRideCalories = pRideCalories;
+		this.mRideDuration = pRideDuration;
+		this.mRideDate = pRideDate;
 	}
 
-	public int addRideToQueue() {
-		return 0;
-	}
-
+	/**
+	 * Compute the Duration, the calories burnt and the date for a ride
+	 */
 	public void computeRide() {
-		// calculate the duration & calories
-		if (rideStartTimestamp != null && rideStopTimestamp != null) {
-			long duration = (rideStopTimestamp.getTime() - rideStartTimestamp
+		if (mRideStartTimestamp != null && mRideStopTimestamp != null) {
+			long lDuration = (mRideStopTimestamp.getTime() - mRideStartTimestamp
 					.getTime()) / 60000;
-			float weight = MainActivity.userConnected.getUserWeight();
-			rideCalories = (double) (weight * 2.204) * duration * 0.1;
-			rideDuration = duration;
-			Calendar calendar = Calendar.getInstance();
-			rideDate = new SimpleDateFormat("yyyy-MM-dd",new Locale("FR","fr")).format(calendar.getTime());
+			float lWeight = MainActivity.userConnected.getUserWeight();
+			mRideCalories = (double) (lWeight * 2.204) * lDuration * 0.1;
+			mRideDuration = lDuration;
+			Calendar lCalendar = Calendar.getInstance();
+			mRideDate = new SimpleDateFormat("yyyy-MM-dd", new Locale("FR",
+					"fr")).format(lCalendar.getTime());
 		}
 	}
 
+	/**
+	 * Save a ride in the database if you have Internet, otherwise in a Json
+	 * File
+	 */
 	public void saveRide() {
-		// if internet then store this in the database
+		/** if internet then store this in the database */
 		if (Internet.isNetworkAvailable(LoginActivity.getAppContext())) {
-			HTIDatabaseConnection htiDbConnection = HTIDatabaseConnection
+			HTIDatabaseConnection lHtiDbConnection = HTIDatabaseConnection
 					.getInstance();
-			htiDbConnection.addRide(this);
+			lHtiDbConnection.addRide(this);
 		}
-		// else store this in a JSON file (FILENAMERIDE)
+		/** else store this in a JSON file (FILENAMERIDE) */
 		else {
 			JsonManager.addRideInJson(MainActivity.FILENAMERIDE, this,
 					LoginActivity.getAppContext());
 		}
 	}
 
+	/**
+	 * Return the routeId associated to the Ride
+	 * 
+	 * @return routeId
+	 */
 	public int getRideRouteId() {
-		return rideRouteId;
+		return this.mRideRouteId;
 	}
 
+	/**
+	 * Return the rideId
+	 * 
+	 * @return rideId
+	 */
 	public int getRideId() {
-		return this.rideId;
+		return this.mRideId;
 	}
 
-	public void setRideId(int rideId) {
-		this.rideId = rideId;
-	}
-
-	public int getRouteId() {
-		return this.rideRouteId;
-	}
-
+	/**
+	 * Get the user associated with this ride
+	 * 
+	 * @return userId
+	 */
 	public int getRideUserId() {
-		return rideUserId;
+		return mRideUserId;
 	}
 
+	/**
+	 * Get the ride duration
+	 * 
+	 * @return rideDuration
+	 */
 	public double getRideDuration() {
-		return rideDuration;
+		return mRideDuration;
 	}
 
-	public void setRouteId(int rideRouteId) {
-		this.rideRouteId = rideRouteId;
-	}
-
+	/**
+	 * Get calories burnt for this ride
+	 * 
+	 * @return calories burnt
+	 */
 	public double getRideCalories() {
-		return this.rideCalories;
+		return this.mRideCalories;
 	}
 
+	/**
+	 * Get the start date of the ride
+	 * 
+	 * @return startDate
+	 */
 	public Date getRideStartTimestamp() {
-		return rideStartTimestamp;
+		return mRideStartTimestamp;
 	}
 
-	public void setRideStartTimestamp(Date rideStartTimestamp) {
-		this.rideStartTimestamp = rideStartTimestamp;
-	}
-
+	/**
+	 * Get the stop date of the ride
+	 * 
+	 * @return stopDate
+	 */
 	public Date getRideStopTimestamp() {
-		return rideStopTimestamp;
+		return mRideStopTimestamp;
 	}
 
-	public void setRideStopTimestamp(Date rideStopTimestamp) {
-		this.rideStopTimestamp = rideStopTimestamp;
-	}
-	
+	/**
+	 * Get the ride date
+	 * 
+	 * @return rideDate
+	 */
 	public String getRideDate() {
-		return rideDate;
+		return mRideDate;
 	}
 
-	public void setRideDate(String rideDate) {
-		this.rideDate = rideDate;
-	}
-	
+	/**
+	 * Return the String that will be displayed in the rides list
+	 * 
+	 * @return displayMessage
+	 */
 	public String toString() {
-		return "Ride n°" + this.rideId + " : " + (int)this.rideDuration + "min / " + 
-				(int)this.rideCalories + " cal. (" + this.rideDate + ")";   
+		return "Ride n°" + this.mRideId + " : " + (int) this.mRideDuration
+				+ "min / " + (int) this.mRideCalories + " cal. ("
+				+ this.mRideDate + ")";
 	}
 
 }

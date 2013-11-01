@@ -17,23 +17,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
 
 public class MainActivity extends FragmentActivity {
 
-	/**
-	 * TODO
-	 *
-	 *  - Association Route / Ride : HashMap
-	 *  - View pour tester
-	 *
-	 */
 	public static final int BUFFERSIZE = 10;
 	public final static String RIDE_NUMBER_MAP = "rideNumberToMap";
+	public final static String ROUTE_TO_DISPLAY = "routeToDisplay";
 	/*
 	 * Ces deux fichiers contiennent toutes mes routes
 	 */
@@ -57,7 +49,7 @@ public class MainActivity extends FragmentActivity {
 	//My Fragments
 	public static RideResultFragment rideResultFragment;
 	public static RunFragment runFragment;
-	public static DisplayMapFragment displayMapFragment;
+	public static DisplayMapActivity displayMapFragment;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -88,7 +80,7 @@ public class MainActivity extends FragmentActivity {
 		}
 		
 		//Manage the fragment
-		displayMapFragment = new DisplayMapFragment();
+		//displayMapFragment = new DisplayMapFragment();
 		
 		//Update ids
 		taskIds = new GetCurrentIdsTask();
@@ -140,20 +132,20 @@ public class MainActivity extends FragmentActivity {
 				rideResultFragment.setArguments(args);
 				return rideResultFragment;
 			}
-			if(position == 2) {
+			/*if(position == 2) {
 				displayMapFragment = new DisplayMapFragment();
 				Bundle args = new Bundle();
 				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
 				displayMapFragment.setArguments(args);
 				return displayMapFragment;
-			}
+			}*/
 			return null;
 		}
 
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 3;
+			return 2;
 		}
 
 		@Override

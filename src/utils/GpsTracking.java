@@ -2,7 +2,7 @@ package utils;
 
 import java.util.Vector;
 
-import model.Waypoint;
+import model.WaypointDB;
 import android.content.Context;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -49,7 +49,7 @@ public class GpsTracking {
 		if (mlocManagerGPS.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			if (MyLocationListener.latitudeGPS > 0) {
 				if (isStart) {
-					Waypoint wp = new Waypoint();
+					WaypointDB wp = new WaypointDB();
 					wp.append("waypointLat", MyLocationListener.latitudeGPS);
 					wp.append("waypointLng", MyLocationListener.longitudeGPS);
 					gpsWayPoints.add(wp);
@@ -85,7 +85,7 @@ public class GpsTracking {
 		if (mlocManagerWifi.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			if (MyLocationListener.latitudeWifi > 0) {
 				if (isStart) {
-					Waypoint wp = new Waypoint();
+					WaypointDB wp = new WaypointDB();
 					wp.append("waypointLat", MyLocationListener.latitudeWifi);
 					wp.append("waypointLng", MyLocationListener.longitudeWifi);
 					wifiWayPoints.add(wp);

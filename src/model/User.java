@@ -1,56 +1,90 @@
 package model;
 
-
+/**
+ * A class to describe a User
+ * 
+ * @author hti
+ * 
+ */
 public class User {
 
-	public static final String CRYPTALGO="SHA-1";
-	private String userEmail;
-	private String userPassword; //encode(password, CRYPTALGO)lol
-	private float userWeight;
-	//private List<Ride> userRides;
-	
-	public User(String userEmail, String userPassword, float userWeight) {
+	/** Algorithm for the password */
+	public static final String CRYPTALGO = "SHA-1";
+
+	/** User mail adress */
+	private String mUserEmail;
+
+	/** User password */
+	private String mUserPassword;
+
+	/** User weight */
+	private float mUserWeight;
+
+	/**
+	 * Constructor of user
+	 * 
+	 * @param pUserEmail
+	 * @param pUserPassword
+	 * @param pUserWeight
+	 */
+	public User(String pUserEmail, String pUserPassword, float pUserWeight) {
 		super();
-		this.userEmail = userEmail;
-		this.userPassword = userPassword;
-		this.userWeight = userWeight;
+		this.mUserEmail = pUserEmail;
+		this.mUserPassword = pUserPassword;
+		this.mUserWeight = pUserWeight;
 	}
 
+	/**
+	 * Get User email
+	 * 
+	 * @return
+	 */
 	public String getUserEmail() {
-		return userEmail;
+		return mUserEmail;
 	}
 
+	/**
+	 * Get User password
+	 * 
+	 * @return
+	 */
 	public String getUserPassword() {
-		return userPassword;
+		return mUserPassword;
 	}
 
+	/**
+	 * Set User password
+	 * 
+	 * @param userPassword
+	 */
 	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
+		this.mUserPassword = userPassword;
 	}
 
+	/**
+	 * Get User weight
+	 * 
+	 * @return
+	 */
 	public float getUserWeight() {
-		return userWeight;
+		return mUserWeight;
 	}
 
+	/**
+	 * Set User weight
+	 * 
+	 * @param userWeight
+	 */
 	public void setUserWeight(int userWeight) {
-		this.userWeight = userWeight;
+		this.mUserWeight = userWeight;
 	}
 
+	/**
+	 * Debug fonction
+	 */
 	@Override
 	public String toString() {
-		return "User [userEmail=" + userEmail + ", userPassword="
-				+ userPassword + ", userWeight=" + userWeight + "]";
+		return "User [userEmail=" + mUserEmail + ", userPassword="
+				+ mUserPassword + ", userWeight=" + mUserWeight + "]";
 	}
-	
-	
-	/*public List<Ride> getUserRides() {
-		return userRides;
-	}
-
-
-
-	public void setUserRides(List<Ride> userRides) {
-		this.userRides = userRides;
-	}
-	*/
 }

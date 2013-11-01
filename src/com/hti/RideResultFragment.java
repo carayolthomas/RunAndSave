@@ -79,7 +79,12 @@ public class RideResultFragment extends Fragment {
 					e.printStackTrace();
 				}
 	    	    //Launch the map corresponding to the route of the ride selected : routeInfos
-				MainActivity.mViewPager.setCurrentItem(2, true);
+				Intent myIntent = new Intent(getActivity(), DisplayMapActivity.class);
+				Log.i("Debug Map", "Intent created");
+				myIntent.putExtra(MainActivity.ROUTE_TO_DISPLAY, routeInfos);
+				Log.i("Debug Map", "Intent fullfilled");
+				startActivity(myIntent);
+				Log.i("Debug Map", "Activity Map started");
 				
 	    	}});
 	    

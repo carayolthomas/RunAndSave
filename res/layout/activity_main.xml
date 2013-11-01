@@ -35,14 +35,5 @@
 		android:layout_height="match_parent"
 		class="com.hti.RideResultFragment" >
 	</fragment>
-	
-	<fragment
-		android:id="@+id/fragment_map_display"
-		android:layout_width="0dp"
-		android:layout_weight="2"
-		android:layout_height="match_parent"
-		android:apiKey="AIzaSyDE_P6Lb10jG3uum9XeiwAnLoeYWWCGZgg"
-		class="com.hti.DisplayMapFragment" >
-	</fragment>
 
 </android.support.v4.view.ViewPager>
