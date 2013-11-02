@@ -130,6 +130,19 @@ public class HTIDatabaseConnection {
 	}
 
 	/**
+	 * Update the weight of an user based on his email
+	 * @param pUser
+	 * @param newmUserWeight
+	 * @return errors
+	 */
+	public String updateuserWeight(User pUser, int newmUserWeight) {
+		DBCollection lUserCollection = mDatabaseInst.getCollection(USERCOLL);
+		return lUserCollection.update(
+				new BasicDBObject("userEmail", pUser.getUserEmail()),
+				new BasicDBObject("userWeight", newmUserWeight)).getError();
+	}
+	
+	/**
 	 * Update the routeId of a ride
 	 * @param pRide
 	 * @param newRouteId
