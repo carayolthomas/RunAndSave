@@ -16,38 +16,45 @@ import com.mongodb.BasicDBObject;
 
 /**
  * This class provides some methods to track the user when he is running
+ * 
  * @author hti
- *
+ * 
  */
 public class GpsTracking {
-	
+
 	/** To know if the tracking is started */
 	public static boolean isStart = false;
 
 	/** Frequency of request */
 	private int mInterval = 3000;
-	
+
 	/** Handler */
 	private Handler mHandler;
-	
+
 	/** Vector to store GPS waypoints */
 	private Vector<BasicDBObject> mGpsWayPoints;
-	
+
 	/** Vector to store Internet waypoints */
 	private Vector<BasicDBObject> mWifiWayPoints;
-	
+
 	/** The location manager for GPS */
 	private static LocationManager mlocManagerGPS;
-	
+
 	/** The location listener for GPS */
 	private static LocationListener mlocListenerGPS;
-	
+
 	/** The location manager for internet */
-	private static LocationManager mlocManagerWifi;
-	
+	private static LocationManager mlocManagerWifi = null;
+
 	/** The locaton listener for internet */
-	private static LocationListener mlocListenerWifi;
-	
+	private static LocationListener mlocListenerWifi = null;
+
+	/** To indicates if we already add a location listener on the GPS **/
+	private static boolean listenerGPSAlreadyAppend = false;
+
+	/** To indicates if we already add a location listener on the Wifi **/
+	private static boolean listenerWifiAlreadyAppend = false;
+
 	/**
 	 * Default Constructor
 	 */
@@ -56,14 +63,16 @@ public class GpsTracking {
 		this.mWifiWayPoints = new Vector<BasicDBObject>();
 		this.mHandler = new Handler();
 	}
-	
+
 	/**
 	 * Track the location of the phone through the GPS
 	 */
 	private void trackGPSLocation() {
-
-		mlocManagerGPS.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				mInterval, 0, mlocListenerGPS);
+		if (!listenerGPSAlreadyAppend) {
+			mlocManagerGPS.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+					mInterval, 0, mlocListenerGPS);
+			listenerGPSAlreadyAppend = true;
+		}
 
 		if (mlocManagerGPS.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			if (MyLocationListener.latitudeGPS > 0) {
@@ -81,9 +90,8 @@ public class GpsTracking {
 		}
 		/** flush the buffer every MainActivity.BUFFERSIZE points */
 		if (mGpsWayPoints.size() > MainActivity.BUFFERSIZE) {
-			JsonManager
-					.addRouteInJson(MainActivity.FILENAMEGPS, mGpsWayPoints,
-							LoginActivity.getAppContext(), MainActivity.nbRoutes);
+			JsonManager.addRouteInJson(MainActivity.FILENAMEGPS, mGpsWayPoints,
+					LoginActivity.getAppContext(), MainActivity.nbRoutes);
 			Log.i(LogTag.WRITEFILEGPS, "Informations written in file");
 		}
 	}
@@ -92,9 +100,12 @@ public class GpsTracking {
 	 * Track the location of the phone through the Network (wifi)
 	 */
 	private void trackWifiLocation() {
-
-		mlocManagerWifi.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-				mInterval, 0, mlocListenerWifi);
+		if (!listenerWifiAlreadyAppend) {
+			mlocManagerWifi.requestLocationUpdates(
+					LocationManager.NETWORK_PROVIDER, mInterval, 0,
+					mlocListenerWifi);
+			listenerWifiAlreadyAppend = true;
+		}
 
 		if (mlocManagerWifi.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			if (MyLocationListener.latitudeWifi > 0) {
@@ -113,29 +124,43 @@ public class GpsTracking {
 		/** flush the buffer every MainActivity.BUFFERSIZE points */
 		if (mWifiWayPoints.size() > MainActivity.BUFFERSIZE) {
 			JsonManager.addRouteInJson(MainActivity.FILENAMEWIFI,
-					mWifiWayPoints, LoginActivity.getAppContext().getApplicationContext(),
-					MainActivity.nbRoutes);
+					mWifiWayPoints, LoginActivity.getAppContext()
+							.getApplicationContext(), MainActivity.nbRoutes);
 			Log.i(LogTag.WRITEFILEWIFI, "Informations written in file");
 		}
 
 	}
-	
+
 	/**
 	 * Start the tracking
 	 */
 	public void startTracking() {
 		isStart = true;
-		mlocManagerGPS = (LocationManager) LoginActivity.getAppContext().getSystemService(Context.LOCATION_SERVICE);
-		mlocListenerGPS = new MyLocationListener(LocationManager.GPS_PROVIDER);
-		mlocManagerWifi = (LocationManager) LoginActivity.getAppContext().getSystemService(Context.LOCATION_SERVICE);
-		mlocListenerWifi = new MyLocationListener(LocationManager.NETWORK_PROVIDER);
+		mlocManagerGPS = (LocationManager) LoginActivity.getAppContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+		mlocManagerWifi = (LocationManager) LoginActivity.getAppContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+		if (mlocListenerGPS == null) {
+			mlocListenerGPS = new MyLocationListener(
+					LocationManager.GPS_PROVIDER);
+		}
+		if (mlocListenerWifi == null) {
+			mlocListenerWifi = new MyLocationListener(
+					LocationManager.NETWORK_PROVIDER);
+		}
 	}
-	
+
 	/**
 	 * Stop the tracking
 	 */
 	public void stopTracking() {
 		isStart = false;
+		mlocManagerGPS.removeUpdates(mlocListenerGPS);
+		mlocManagerWifi.removeUpdates(mlocListenerWifi);
+		mlocListenerGPS = null;
+		mlocListenerWifi = null;
+		listenerWifiAlreadyAppend = false;
+		listenerGPSAlreadyAppend = false;
 	}
 
 	/** Periodic task */
@@ -149,16 +174,16 @@ public class GpsTracking {
 		m_statusChecker = new Runnable() {
 			@Override
 			public void run() {
-				if(isStart) {
+				if (isStart) {
 					trackGPSLocation();
 					trackWifiLocation();
 				}
-					mHandler.postDelayed(m_statusChecker, mInterval);
+				mHandler.postDelayed(m_statusChecker, mInterval);
 			}
 		};
 		m_statusChecker.run();
 	}
-	
+
 	/**
 	 * Stop the periodic task
 	 */
