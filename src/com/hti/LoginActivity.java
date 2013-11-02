@@ -34,7 +34,7 @@ public class LoginActivity extends Activity {
 	private UserLoginTask mAuthTask = null;
 
 	/** We store the User connected */
-	private static User mUser;
+	public static User mUser;
 
 	/** Values for email and password at the time of the login attempt. */
 	private String mEmail;
@@ -213,6 +213,7 @@ public class LoginActivity extends Activity {
 				if (mUser == null) {
 					Log.e(LogTag.AUTHENTIFICATION,
 							"Issue during the authentification of the user");
+					return false;
 				} else {
 					if (!mUser.getUserEmail().isEmpty()
 							&& mUser.getUserPassword().isEmpty()) {

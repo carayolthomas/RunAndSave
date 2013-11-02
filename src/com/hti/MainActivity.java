@@ -151,8 +151,6 @@ public class MainActivity extends FragmentActivity {
 			if (position == 1) {
 				rideResultFragment = new RideResultFragment();
 				Bundle args = new Bundle();
-				// args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position
-				// + 1);
 				rideResultFragment.setArguments(args);
 				return rideResultFragment;
 			}
@@ -168,7 +166,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			// Show 2 total pages.
+			/** Show 2 total pages. */
 			return 2;
 		}
 
@@ -218,24 +216,31 @@ public class MainActivity extends FragmentActivity {
 	/**
 	 * Tracking handle OFF
 	 */
-	public static void stopLogPosition() {
+	public static boolean stopLogPosition() {
 		stopWritingPositionInCache();
 		/** Stop chrono */
 		dateStopRunning = new Date();
 		/** handle the new route */
-		Route lRouteToSave = JsonManager.getRoute(JsonManager
-				.openReader(FILENAMEWIFI)).mRoute;
-		taskRoute = new SaveRouteInDBTask();
-		taskRoute.execute(lRouteToSave);
-		/** handle the new ride */
-		Ride lRideToSave = new Ride(nbRides, nbRoutes, 0, dateStartRunning,
-				dateStopRunning);
-		lRideToSave.computeRide();
-		taskRide = new SaveRideInDBTask();
-		taskRide.execute(lRideToSave);
-		/** modify id's */
-		nbRides++;
-		nbRoutes++;
+		if(JsonManager.getRoute(JsonManager
+				.openReader(FILENAMEGPS)) != null) {
+			Route lRouteToSave = JsonManager.getRoute(JsonManager
+					.openReader(FILENAMEGPS)).mRoute;
+			taskRoute = new SaveRouteInDBTask();
+			taskRoute.execute(lRouteToSave);
+			/** handle the new ride */
+			Ride lRideToSave = new Ride(nbRides, nbRoutes, 0, dateStartRunning,
+					dateStopRunning);
+			lRideToSave.computeRide();
+			taskRide = new SaveRideInDBTask();
+			taskRide.execute(lRideToSave);
+			/** modify id's */
+			nbRides++;
+			nbRoutes++;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**

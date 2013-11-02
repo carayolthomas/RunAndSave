@@ -32,10 +32,10 @@ public class RideResultFragment extends Fragment {
 
 	/** Constant in order to store the route to display in an Intent */
 	public static String EXTRA_ROUTE = "route_to_display";
-
+	
 	/** The list view for all the rides */
-	public ListView mListRidesView;
-
+	private ListView mListRidesView;
+	
 	/** The rides list */
 	private List<Ride> mListRidesInfos;
 
@@ -55,7 +55,7 @@ public class RideResultFragment extends Fragment {
 			Bundle pSavedInstanceState) {
 		View lView = pInflater.inflate(R.layout.fragment_main_result_ride,
 				pContainer, false);
-
+		
 		/** Display all of these rides in the ListView */
 		mListRidesView = (ListView) lView.findViewById(R.id.ridesListView);
 		mListRidesView.setOnItemClickListener(new OnItemClickListener() {

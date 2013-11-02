@@ -9,20 +9,104 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity$DummySectionFragment" >
+    tools:context=".MainActivity$DummySectionFragment"
+    android:descendantFocusability="beforeDescendants"
+	android:focusableInTouchMode="true" >
 
     <TextView
-        android:id="@+id/userEmailAndWeight"
-        android:layout_width="353dp"
+        android:id="@+id/userEmail"
+        android:layout_width="341dp"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textColorHint="@android:color/white"
-        android:textColorLink="@android:color/white" />
+        android:text="@string/welcomeMessage"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/statusListRidesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/userWeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/weightMessage"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textDisplayWeightUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="27dp"
+            android:text="@string/updateWeight"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/weightInput"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01"
+            android:ems="10"
+            android:inputType="numberSigned"
+            android:maxLength="3"
+            android:minWidth="60dp"
+            android:textSize="12sp" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/updateWeightButton"
+            android:layout_width="95dp"
+            android:layout_height="wrap_content"
+            android:minHeight="38dp"
+            android:text="@string/updateWeightButtonText"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
         android:id="@+id/buttonRun"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/startButton" />
+        android:text="@string/startButton"
+        android:textStyle="bold" />
 
 </LinearLayout>
