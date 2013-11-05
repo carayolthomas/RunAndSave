@@ -35,5 +35,21 @@
         android:layout_weight="2"
         class="com.hti.RideResultFragment" >
     </fragment>
+    
+    <fragment
+        android:id="@+id/fragment_main_graphview"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        class="com.hti.GraphFragment" >
+    </fragment>
+    
+    <fragment
+        android:id="@+id/fragment_main_user_informations"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        class="com.hti.UserInformationFragment" >
+    </fragment>
 
 </android.support.v4.view.ViewPager>

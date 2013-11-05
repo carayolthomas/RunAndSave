@@ -1,11 +1,17 @@
 package com.hti;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import model.Route;
 import model.WaypointMAP;
 
@@ -90,8 +96,23 @@ public class DisplayMapActivity extends Activity {
 				: mWifiWaypoints.size()) : mGpsWaypoints.size();
 
 		/** Create the route line */
+		float lCumulatedDistance = 0;
 		for (lIndex = 0; lIndex < lSize; lIndex++) {
 			WaypointMAP lWpt = null;
+			WaypointMAP lWptPrevious = null;
+			/** Get the previous one to compute the distance between both */
+			if(lIndex != 0) {
+				if (mGpsWaypoints != null
+						&& mGpsWaypoints.get(lIndex).getWaypointLat() != 0) {
+					lWptPrevious = mGpsWaypoints.get(lIndex-1);
+				} else {
+					if (mWifiWaypoints != null
+							&& mWifiWaypoints.get(lIndex).getWaypointLat() != 0) {
+						lWptPrevious = mWifiWaypoints.get(lIndex-1);
+					}
+				} 
+			}
+			/** Get the current one */
 			if (mGpsWaypoints != null
 					&& mGpsWaypoints.get(lIndex).getWaypointLat() != 0) {
 				lWpt = mGpsWaypoints.get(lIndex);
@@ -100,6 +121,16 @@ public class DisplayMapActivity extends Activity {
 						&& mWifiWaypoints.get(lIndex).getWaypointLat() != 0) {
 					lWpt = mWifiWaypoints.get(lIndex);
 				}
+			}
+			/** Compute distance between both */
+			if(lWpt != null && lWptPrevious != null) {
+				float[] lDistance = new float[10];
+				Location.distanceBetween(lWptPrevious.getWaypointLat(),
+						lWptPrevious.getWaypointLng(),
+						lWpt.getWaypointLat(),
+						lWpt.getWaypointLng(),
+						lDistance);
+				lCumulatedDistance += lDistance[0];
 			}
 			if (lWpt != null) {
 				/** Add the start marker & zoom on it */
@@ -144,13 +175,53 @@ public class DisplayMapActivity extends Activity {
 					.position(
 							new LatLng(lWpt.getWaypointLat(), lWpt
 									.getWaypointLng()))
-					.title("Finish")
+					.title("Finish: " + String.valueOf((new Formatter().format("%.2f", lCumulatedDistance/1000.))) + " km.")
 					.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 		}
 		/** Trace the route */
 		lLineOptions.width(2).color(Color.RED);
 		mMapGoogle.addPolyline(lLineOptions);
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+			mMapGoogle.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+			mMapGoogle.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+			return true;
+		} 
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		/**
+		 * Inflate the menu; this adds items to the action bar if it is present.
+		 */
+		getMenuInflater().inflate(R.menu.map, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    /** Handle item selection */
+	    switch (item.getItemId()) {
+	        case R.id.action_help:
+	            displayHelpView();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	private void displayHelpView() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.help_text_title);
+		builder.setIcon(R.drawable.about_icon);
+        builder.setMessage(R.string.help_text).create().show();	
 	}
 
 }

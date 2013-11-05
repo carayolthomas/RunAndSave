@@ -81,6 +81,12 @@ public class MainActivity extends FragmentActivity {
 
 	/** RunFragment */
 	public static RunFragment runFragment;
+	
+	/** RunFragment */
+	public static UserInformationFragment userInformationFragment;
+	
+	/** RunFragment */
+	public static GraphFragment graphFragment;
 
 	/** DisplayMapActivity */
 	public static DisplayMapActivity displayMapActivity;
@@ -153,8 +159,7 @@ public class MainActivity extends FragmentActivity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.about_text_title);
 		builder.setIcon(R.drawable.about_icon);
-        builder.setMessage(R.string.about_text).create().show();
-		
+        builder.setMessage(R.string.about_text).create().show();	
 	}
 
 	/**
@@ -170,31 +175,36 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			if (position == 0) {
+				userInformationFragment = new UserInformationFragment();
+				Bundle args = new Bundle();
+				userInformationFragment.setArguments(args);
+				return userInformationFragment;
+			}
+			if (position == 1) {
 				runFragment = new RunFragment();
 				Bundle args = new Bundle();
 				runFragment.setArguments(args);
 				return runFragment;
 			}
-			if (position == 1) {
+			if (position == 2) {
 				rideResultFragment = new RideResultFragment();
 				Bundle args = new Bundle();
 				rideResultFragment.setArguments(args);
 				return rideResultFragment;
 			}
-			/*
-			 * if(position == 2) { displayMapFragment = new
-			 * DisplayMapFragment(); Bundle args = new Bundle();
-			 * //args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position +
-			 * 1); displayMapFragment.setArguments(args); return
-			 * displayMapFragment; }
-			 */
+			if (position == 3) {
+				graphFragment = new GraphFragment();
+				Bundle args = new Bundle();
+				graphFragment.setArguments(args);
+				return graphFragment;
+			}
 			return null;
 		}
 
 		@Override
 		public int getCount() {
-			/** Show 2 total pages. */
-			return 2;
+			/** Show 4 total pages. */
+			return 4;
 		}
 
 		@Override
@@ -202,11 +212,13 @@ public class MainActivity extends FragmentActivity {
 			Locale l = Locale.getDefault();
 			switch (position) {
 			case 0:
-				return getString(R.string.title_section1).toUpperCase(l);
+				return getString(R.string.title_section_user_infos).toUpperCase(l);
 			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
+				return getString(R.string.title_section_run).toUpperCase(l);
 			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
+				return getString(R.string.title_section_rides).toUpperCase(l);
+			case 3:
+				return getString(R.string.title_section_graph).toUpperCase(l);
 			}
 			return null;
 		}
