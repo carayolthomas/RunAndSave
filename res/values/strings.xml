@@ -23,6 +23,9 @@
     <string name="weightMessage">Your weight is : </string>
     <string name="updateWeight">Update your weight : </string>
     <string name="updateWeightButtonText">Update</string>
-    <string name="load_progress_rides">Your rides are loading&#8230;</string>
+    <string name="action_about">About</string>
+    <string name="about_text_title">HTI android app.</string>
+    <string name="about_text">Created by :\n - Thomas Carayol,\n - Gabriel Farache,\n - Mathilde Menet</string>
+
 
 </resources>

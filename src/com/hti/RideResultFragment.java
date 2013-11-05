@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import logs.LogTag;
 import model.Ride;
 import model.Route;
 
@@ -11,13 +12,16 @@ import utils.HTIDatabaseConnection;
 import utils.ItemRideAdapter;
 
 import android.support.v4.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
@@ -32,6 +36,9 @@ public class RideResultFragment extends Fragment {
 
 	/** Constant in order to store the route to display in an Intent */
 	public static String EXTRA_ROUTE = "route_to_display";
+	
+	/** View for loading screen */
+	private ProgressDialog mDialogLoadingMap;
 	
 	/** The list view for all the rides */
 	private ListView mListRidesView;
@@ -62,6 +69,8 @@ public class RideResultFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				/**  Test loading screen */
+				createLoadingWaitDialog("The map is loading. Please wait...");
 				/** Get the ride selected by the user */
 				String lSelectedFromList = (mListRidesView
 						.getItemAtPosition(position).toString());
@@ -70,56 +79,39 @@ public class RideResultFragment extends Fragment {
 								.charAt(0));
 				mTaskRouteRide = new GetSelectedRouteRideTask();
 				mTaskRouteRide.execute(lNumRideSelected);
-				/** Wait for the getter (to do in a better way) */
-				try {
-					while (mTaskRouteRide.get().booleanValue() != true) {
-						Thread.sleep(10);
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-				/**
-				 * Launch the map corresponding to the route of the ride
-				 * selected : routeInfos
-				 */
-				Intent lIntent = new Intent(getActivity(),
-						DisplayMapActivity.class);
-				lIntent.putExtra(MainActivity.ROUTE_TO_DISPLAY, mRouteInfos);
-				startActivity(lIntent);
 			}
 		});
-
+		
 		return lView;
 	}
 
 	/**
-	 * This method allows the user to refresh the rides (TODO automatically)
+	 * This method refresh the rides in the list
 	 */
 	public void refresh() {
+		/** Loading page */
+		createLoadingWaitDialog("Your rides are loading. Please wait...");
 		/** Get all the rides of the user connected */
 		mListRidesInfosToString = new ArrayList<String>();
 		mTaskRides = new GetAllRidesTask();
 		mTaskRides.execute();
-		try {
-			while (mTaskRides.get().booleanValue() != true) {
-				Thread.sleep(10);
-			}
-
-			ItemRideAdapter lAdapter = new ItemRideAdapter(
-					this.getActivity().getApplicationContext(),
-					R.layout.item_ride_row,
-					mListRidesInfosToString
-							.toArray(new String[mListRidesInfosToString.size()]));
-			mListRidesView.setAdapter(lAdapter);
-
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-
+	}
+	
+	/**
+	 * Create a dialog view for waiting
+	 * @param pMessage
+	 */
+	public void createLoadingWaitDialog(String pMessage) {
+		mDialogLoadingMap = ProgressDialog.show(getActivity(), "", 
+				pMessage, true);
+		mDialogLoadingMap.setCancelable(false);
+	}
+	
+	/**
+	 * Dismiss the loading dialog view
+	 */
+	public void dismissLoadingWaitDialog() {
+		mDialogLoadingMap.dismiss();
 	}
 
 	/**
@@ -129,7 +121,8 @@ public class RideResultFragment extends Fragment {
 	@Override
 	public void setMenuVisibility(final boolean visible) {
 		super.setMenuVisibility(visible);
-		if (visible) {
+		if (visible && MainActivity.mIsNewRide) {
+			MainActivity.mIsNewRide = false;
 			refresh();
 		}
 	}
@@ -148,6 +141,18 @@ public class RideResultFragment extends Fragment {
 			}
 			return true;
 		}
+		
+		@Override
+		protected void onPostExecute(final Boolean pSuccess) {
+			ItemRideAdapter lAdapter = new ItemRideAdapter(
+					getActivity().getApplicationContext(),
+					R.layout.item_ride_row,
+					mListRidesInfosToString
+							.toArray(new String[mListRidesInfosToString.size()]));
+			mListRidesView.setAdapter(lAdapter);
+			/** Cancel the loading dialog */
+			dismissLoadingWaitDialog();
+		}
 	}
 
 	/**
@@ -161,8 +166,36 @@ public class RideResultFragment extends Fragment {
 					params[0]);
 			mRouteInfos = HTIDatabaseConnection.getInstance().getRoute(
 					lRideInfos.getRideRouteId());
-			return true;
+			if(mRouteInfos != null) {
+				return true;
+			} else {
+				return false;
+			}
+			
+		}
+		
+		@Override
+		protected void onPostExecute(final Boolean pSuccess) {
+			if (!pSuccess) {
+				Log.e(LogTag.READDB, "The route returned is null");
+				try {
+					throw new Exception("The route returned is null");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				/**
+				 * Launch the map corresponding to the route of the ride
+				 * selected : routeInfos
+				 */
+				Intent lIntent = new Intent(getActivity(),
+						DisplayMapActivity.class);
+				lIntent.putExtra(MainActivity.ROUTE_TO_DISPLAY, mRouteInfos);
+				/** Cancel the loading page */
+				dismissLoadingWaitDialog();
+				/** Start the new activity */
+				startActivity(lIntent);
+			}
 		}
 	}
-
 }

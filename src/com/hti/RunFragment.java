@@ -1,8 +1,10 @@
 package com.hti;
 
+import utils.HTIDatabaseConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,9 @@ import android.widget.Toast;
  */
 public class RunFragment extends Fragment {
 
+	/** Button run */
+	public View mView;
+	
 	/** Button run */
 	public Button mButtonRun;
 	
@@ -41,13 +46,17 @@ public class RunFragment extends Fragment {
 
 	/** In order to know if the user start a run */
 	private boolean mIsStart = false;
+	
+	/** Asynctask in order to update the user weight in the database */
+	private UpdateUserWeight mUpdateUserWeight;
 
 	public View onCreateView(LayoutInflater pInflater, ViewGroup pContainer,
 			Bundle pSavedInstanceState) {
 		View lView = pInflater.inflate(R.layout.fragment_main_run, pContainer,
 				false);
 		lView.requestFocus();
-
+		mView = lView;
+		
 		mConnectedAs = (TextView) lView.findViewById(R.id.userEmail);
 		mConnectedAs.setText(mConnectedAs.getText() + " " + LoginActivity.mUser.getUserEmail());
 		
@@ -74,14 +83,17 @@ public class RunFragment extends Fragment {
 		
 		mWeightInput = (EditText) lView.findViewById(R.id.weightInput);
 		mWeightInput.setSelected(false);
-		
+
 		mButtonUpdateWeight = (Button) lView.findViewById(R.id.updateWeightButton);
 		mButtonUpdateWeight.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				if (mWeightInput.getText().toString() != null) {
-					Log.i("Update Weight","Not implemented : OK");
+				if (!mWeightInput.getText().toString().isEmpty()) {
+					mUpdateUserWeight = new UpdateUserWeight();
+					mUpdateUserWeight.execute(Integer.parseInt(mWeightInput.getText().toString()));
+					mWeightInput.setText("");
+					Toast.makeText(LoginActivity.getAppContext(), "Your weight has been updated.", Toast.LENGTH_LONG).show();
 				} else {
-					Log.i("Update Weight","Not implemented : NOK");
+					Toast.makeText(LoginActivity.getAppContext(), "Please first enter your weight.", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
@@ -89,5 +101,19 @@ public class RunFragment extends Fragment {
 		return lView;
 	}
 	
-	
+	/**
+	 * Asynctask in order to update the user weight in the database
+	 */
+	public class UpdateUserWeight extends
+			AsyncTask<Integer, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Integer... params) {
+			Looper.prepare();
+			String lErrors = HTIDatabaseConnection.getInstance().updateUserWeight(LoginActivity.mUser, params[0]);
+			if(lErrors != null) {
+				/** Log erreur */
+			}
+			return true;
+		}
+	}
 }

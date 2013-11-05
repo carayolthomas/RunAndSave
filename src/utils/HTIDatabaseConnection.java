@@ -135,11 +135,13 @@ public class HTIDatabaseConnection {
 	 * @param newmUserWeight
 	 * @return errors
 	 */
-	public String updateuserWeight(User pUser, int newmUserWeight) {
+	public String updateUserWeight(User pUser, int newUserWeight) {
 		DBCollection lUserCollection = mDatabaseInst.getCollection(USERCOLL);
 		return lUserCollection.update(
 				new BasicDBObject("userEmail", pUser.getUserEmail()),
-				new BasicDBObject("userWeight", newmUserWeight)).getError();
+				new BasicDBObject("userEmail", pUser.getUserEmail()).
+				append("userPassword", pUser.getUserPassword()).
+				append("userWeight", newUserWeight)).getError();
 	}
 	
 	/**

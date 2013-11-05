@@ -10,6 +10,7 @@ import model.User;
 import utils.GpsTracking;
 import utils.HTIDatabaseConnection;
 import utils.JsonManager;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
 /**
  * MainActivity which provide the three fragment of this application
@@ -88,6 +90,9 @@ public class MainActivity extends FragmentActivity {
 
 	/** The ViewPager that will host the section contents. */
 	public static ViewPager mViewPager;
+	
+	/** Boolean in order to know if there is a new ride */
+	public static boolean mIsNewRide;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +123,9 @@ public class MainActivity extends FragmentActivity {
 		/** Set up the ViewPager with the sections adapter. */
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
-
+		
+		/** At the beginning there is no new ride but we have to load all the rides once */
+		mIsNewRide = true;
 	}
 
 	@Override
@@ -128,6 +135,26 @@ public class MainActivity extends FragmentActivity {
 		 */
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    /** Handle item selection */
+	    switch (item.getItemId()) {
+	        case R.id.action_about:
+	            displayAboutView();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+
+	private void displayAboutView() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.about_text_title);
+		builder.setIcon(R.drawable.about_icon);
+        builder.setMessage(R.string.about_text).create().show();
+		
 	}
 
 	/**
@@ -236,6 +263,8 @@ public class MainActivity extends FragmentActivity {
 			/** modify id's */
 			nbRides++;
 			nbRoutes++;
+			/** There is now a new ride */
+			mIsNewRide = true;
 			return true;
 		}
 		else {

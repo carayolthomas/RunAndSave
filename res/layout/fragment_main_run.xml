@@ -18,6 +18,7 @@
         android:layout_width="341dp"
         android:layout_height="wrap_content"
         android:text="@string/welcomeMessage"
+        android:textColor="@android:color/black"
         android:textSize="15sp" />
 
     <TextView
@@ -30,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/weightMessage"
+        android:textColor="@android:color/black"
         android:textSize="15sp" />
 
     <LinearLayout
@@ -46,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="27dp"
             android:text="@string/updateWeight"
+            android:textColor="@android:color/black"
             android:textSize="12sp" />
 
         <EditText
@@ -57,6 +60,7 @@
             android:inputType="numberSigned"
             android:maxLength="3"
             android:minWidth="60dp"
+            android:textColor="@android:color/holo_blue_light"
             android:textSize="12sp" >
 
             <requestFocus />
@@ -66,8 +70,11 @@
             android:id="@+id/updateWeightButton"
             android:layout_width="95dp"
             android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_dark"
             android:minHeight="38dp"
             android:text="@string/updateWeightButtonText"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/holo_orange_dark"
             android:textSize="12sp" />
 
     </LinearLayout>
@@ -106,7 +113,9 @@
         android:id="@+id/buttonRun"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/holo_orange_dark"
         android:text="@string/startButton"
+        android:textColor="@android:color/white"
         android:textStyle="bold" />
 
 </LinearLayout>

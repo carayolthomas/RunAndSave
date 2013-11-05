@@ -63,7 +63,7 @@ public class ItemRideAdapter extends ArrayAdapter<String> {
 				R.drawable.icon_list_ride);
 
 		lTextView.setText(lItem.getItemRideText());
-		lTextView.setTextColor(Color.BLACK);
+		lTextView.setTextColor(Color.parseColor("#575451"));
 		lImageView.setImageResource(lItem.getItemRideIconFile());
 		return rowView;
 
