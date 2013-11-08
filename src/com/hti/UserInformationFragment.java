@@ -42,8 +42,8 @@ public class UserInformationFragment extends Fragment {
 		mWeight = (TextView) lView.findViewById(R.id.userWeight);
 		mWeight.setText(mWeight.getText() + " " + String.valueOf(LoginActivity.mUser.getUserWeight()));
 		
-		mWeightInput = (EditText) lView.findViewById(R.id.weightInput);
-		mWeightInput.setSelected(false);
+		//mWeightInput = (EditText) lView.findViewById(R.id.weightInput);
+		//mWeightInput.setSelected(false);
 
 		mButtonUpdateWeight = (Button) lView.findViewById(R.id.updateWeightButton);
 		mButtonUpdateWeight.setOnClickListener(new View.OnClickListener() {

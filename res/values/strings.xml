@@ -20,13 +20,13 @@
     <string name="startButton">Let\'s Run !</string>
     <string name="replaceImageViewRideRow">Image</string>
     <string name="refreshRidesList">Refresh rides list</string>
-    <string name="welcomeMessage">Connected as : </string>
+    <string name="welcomeMessage">Email : </string>
     <string name="weightMessage">Your weight is : </string>
     <string name="updateWeight">Update your weight : </string>
-    <string name="updateWeightButtonText">Update</string>
+    <string name="updateWeightButtonText">Update your informations</string>
     <string name="action_about">About</string>
     <string name="about_text_title">HTI android app.</string>
-    <string name="about_text">Created by :\n - Thomas Carayol,\n - Gabriel Farache,\n - Mathilde Menet</string>
+    <string name="about_text">Created by :\n - Thomas Carayol\n - Gabriel Farache\n - Mathilde Menet</string>
     <string name="action_help">Help</string>
     <string name="help_text_title">HTI android app.</string>
     <string name="help_text">You can switch between Normal/Satellite view using your Volume key (Up/Down). Have fun :)</string>

@@ -27,7 +27,7 @@ public class Ride {
 	private int mRideRouteId;
 
 	/** The id of the user associated to the ride */
-	private int mRideUserId;
+	private String mRideUserEmail;
 
 	/** Number of calories burnt during this ride */
 	private double mRideCalories;
@@ -67,18 +67,18 @@ public class Ride {
 	 * Constructor used for the communication with the database
 	 * 
 	 * @param pRideId
-	 * @param pRideUserId
+	 * @param pRideUserEmail
 	 * @param pRideRouteId
 	 * @param pRideCalories
 	 * @param pRideDuration
 	 * @param pRideDate
 	 */
-	public Ride(int pRideId, int pRideUserId, int pRideRouteId,
+	public Ride(int pRideId, String pRideUserEmail, int pRideRouteId,
 			double pRideCalories, double pRideDuration, String pRideDate) {
 		super();
 		this.mRideId = pRideId;
 		this.mRideRouteId = pRideRouteId;
-		this.mRideUserId = pRideUserId;
+		this.mRideUserEmail = pRideUserEmail;
 		this.mRideCalories = pRideCalories;
 		this.mRideDuration = pRideDuration;
 		this.mRideDate = pRideDate;
@@ -141,8 +141,8 @@ public class Ride {
 	 * 
 	 * @return userId
 	 */
-	public int getRideUserId() {
-		return mRideUserId;
+	public String getRideUserEmail() {
+		return mRideUserEmail;
 	}
 
 	/**
