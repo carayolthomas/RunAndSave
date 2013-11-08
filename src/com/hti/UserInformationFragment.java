@@ -2,10 +2,14 @@ package com.hti;
 
 import utils.HTIDatabaseConnection;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +21,7 @@ import android.widget.Toast;
 public class UserInformationFragment extends Fragment {
 
 	/** Asynctask in order to update the user weight in the database */
-	private UpdateUserWeight mUpdateUserWeight;
+	private UpdateUserWeightTask mUpdateUserWeightTask;
 	
 	/** Button updateWeight */
 	public Button mButtonUpdateWeight;
@@ -42,20 +46,40 @@ public class UserInformationFragment extends Fragment {
 		mWeight = (TextView) lView.findViewById(R.id.userWeight);
 		mWeight.setText(mWeight.getText() + " " + String.valueOf(LoginActivity.mUser.getUserWeight()));
 		
-		//mWeightInput = (EditText) lView.findViewById(R.id.weightInput);
-		//mWeightInput.setSelected(false);
-
 		mButtonUpdateWeight = (Button) lView.findViewById(R.id.updateWeightButton);
 		mButtonUpdateWeight.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				if (!mWeightInput.getText().toString().isEmpty()) {
-					mUpdateUserWeight = new UpdateUserWeight();
-					mUpdateUserWeight.execute(Integer.parseInt(mWeightInput.getText().toString()));
-					mWeightInput.setText("");
-					Toast.makeText(LoginActivity.getAppContext(), "Your weight has been updated.", Toast.LENGTH_LONG).show();
-				} else {
-					Toast.makeText(LoginActivity.getAppContext(), "Please first enter your weight.", Toast.LENGTH_LONG).show();
-				}
+				/** Creation of alertdialog to modify */
+			    AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());                 
+			    alert.setTitle("Update your weight");  
+			    alert.setMessage("Enter your weight :"); 
+			    alert.setCancelable(false);
+
+			    final EditText input = new EditText(getActivity()); 
+			    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+			    
+			    InputFilter[] filterArray = new InputFilter[1];
+			    filterArray[0] = new InputFilter.LengthFilter(3);
+			    input.setFilters(filterArray);
+			    
+			    alert.setView(input);
+			    alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {  
+			        public void onClick(DialogInterface dialog, int whichButton) {  
+			            String value = input.getText().toString();
+			            if (!value.isEmpty()) {
+							mUpdateUserWeightTask = new UpdateUserWeightTask();
+							mUpdateUserWeightTask.execute(Integer.parseInt(mWeightInput.getText().toString()));
+							Toast.makeText(LoginActivity.getAppContext(), "Your weight has been updated.", Toast.LENGTH_LONG).show();
+						} else {
+							Toast.makeText(LoginActivity.getAppContext(), "Please first enter your weight.", Toast.LENGTH_LONG).show();
+						}
+			           }  
+			         });  
+			    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {
+		            }
+		        });
+			    alert.show();
 			}
 		});
 
@@ -77,7 +101,7 @@ public class UserInformationFragment extends Fragment {
 	/**
 	 * Asynctask in order to update the user weight in the database
 	 */
-	public class UpdateUserWeight extends
+	public class UpdateUserWeightTask extends
 			AsyncTask<Integer, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Integer... params) {
