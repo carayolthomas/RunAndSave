@@ -1,15 +1,18 @@
 package com.hti;
 
+import logs.LogTag;
 import utils.HTIDatabaseConnection;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +37,9 @@ public class UserInformationFragment extends Fragment {
 
 	/** Text weight */
 	public TextView mWeight;
+	
+	/** Looper created*/
+	private boolean mLooperCreated;
 	
 	public View onCreateView(LayoutInflater pInflater, ViewGroup pContainer,
 			Bundle pSavedInstanceState) {
@@ -68,7 +74,7 @@ public class UserInformationFragment extends Fragment {
 			            String value = input.getText().toString();
 			            if (!value.isEmpty()) {
 							mUpdateUserWeightTask = new UpdateUserWeightTask();
-							mUpdateUserWeightTask.execute(Integer.parseInt(mWeightInput.getText().toString()));
+							mUpdateUserWeightTask.execute(Integer.parseInt(value));
 							Toast.makeText(LoginActivity.getAppContext(), "Your weight has been updated.", Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(LoginActivity.getAppContext(), "Please first enter your weight.", Toast.LENGTH_LONG).show();
@@ -83,6 +89,8 @@ public class UserInformationFragment extends Fragment {
 			}
 		});
 
+		/**Looper not yet created*/
+		mLooperCreated = false;
 		
 		return lView;
 	}
@@ -105,12 +113,21 @@ public class UserInformationFragment extends Fragment {
 			AsyncTask<Integer, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Integer... params) {
-			Looper.prepare();
+			if(!mLooperCreated) {
+				Looper.prepare();
+				mLooperCreated = true;
+			}
 			String lErrors = HTIDatabaseConnection.getInstance().updateUserWeight(LoginActivity.mUser, params[0]);
 			if(lErrors != null) {
 				/** Log erreur */
 			}
+			LoginActivity.mUser.setUserWeight(params[0]);
 			return true;
 		}
+		@Override
+		protected void onPostExecute(final Boolean pSuccess) {
+			mWeight.setText(mWeight.getText().toString().substring(0, 16) + " " + String.valueOf(LoginActivity.mUser.getUserWeight()));
+		}
+		
 	}
 }
