@@ -111,7 +111,7 @@ public class MainActivity extends FragmentActivity {
 			userConnected = new User(
 					userIntent.getStringExtra(LoginActivity.EXTRA_EMAIL),
 					userIntent.getStringExtra(LoginActivity.EXTRA_PASSWORD),
-					Float.parseFloat(userIntent
+					Integer.parseInt(userIntent
 							.getStringExtra(LoginActivity.EXTRA_WEIGHT)));
 		}
 

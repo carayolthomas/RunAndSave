@@ -1,18 +1,15 @@
 package com.hti;
 
-import logs.LogTag;
 import utils.HTIDatabaseConnection;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,36 +53,36 @@ public class UserInformationFragment extends Fragment {
 		mButtonUpdateWeight.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				/** Creation of alertdialog to modify */
-			    AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());                 
-			    alert.setTitle("Update your weight");  
-			    alert.setMessage("Enter your weight :"); 
-			    alert.setCancelable(false);
+			    AlertDialog.Builder lAlert = new AlertDialog.Builder(getActivity());                 
+			    lAlert.setTitle("Update your weight");  
+			    lAlert.setMessage("Enter your weight :"); 
+			    lAlert.setCancelable(false);
 
-			    final EditText input = new EditText(getActivity()); 
-			    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+			    final EditText lInput = new EditText(getActivity()); 
+			    lInput.setInputType(InputType.TYPE_CLASS_NUMBER);
 			    
-			    InputFilter[] filterArray = new InputFilter[1];
-			    filterArray[0] = new InputFilter.LengthFilter(3);
-			    input.setFilters(filterArray);
+			    InputFilter[] lFilterArray = new InputFilter[1];
+			    lFilterArray[0] = new InputFilter.LengthFilter(3);
+			    lInput.setFilters(lFilterArray);
 			    
-			    alert.setView(input);
-			    alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {  
+			    lAlert.setView(lInput);
+			    lAlert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {  
 			        public void onClick(DialogInterface dialog, int whichButton) {  
-			            String value = input.getText().toString();
-			            if (!value.isEmpty()) {
+			            String lValue = lInput.getText().toString();
+			            if (!lValue.isEmpty()) {
 							mUpdateUserWeightTask = new UpdateUserWeightTask();
-							mUpdateUserWeightTask.execute(Integer.parseInt(value));
+							mUpdateUserWeightTask.execute(Integer.parseInt(lValue));
 							Toast.makeText(LoginActivity.getAppContext(), "Your weight has been updated.", Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(LoginActivity.getAppContext(), "Please first enter your weight.", Toast.LENGTH_LONG).show();
 						}
 			           }  
 			         });  
-			    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			    lAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 		            public void onClick(DialogInterface dialog, int which) {
 		            }
 		        });
-			    alert.show();
+			    lAlert.show();
 			}
 		});
 

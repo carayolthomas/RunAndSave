@@ -18,7 +18,7 @@ public class User {
 	private String mUserPassword;
 
 	/** User weight */
-	private float mUserWeight;
+	private int mUserWeight;
 
 	/**
 	 * Constructor of user
@@ -27,7 +27,7 @@ public class User {
 	 * @param pUserPassword
 	 * @param pUserWeight
 	 */
-	public User(String pUserEmail, String pUserPassword, float pUserWeight) {
+	public User(String pUserEmail, String pUserPassword, int pUserWeight) {
 		super();
 		this.mUserEmail = pUserEmail;
 		this.mUserPassword = pUserPassword;
@@ -66,7 +66,7 @@ public class User {
 	 * 
 	 * @return
 	 */
-	public float getUserWeight() {
+	public int getUserWeight() {
 		return mUserWeight;
 	}
 

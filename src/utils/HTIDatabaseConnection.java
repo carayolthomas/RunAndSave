@@ -301,7 +301,7 @@ public class HTIDatabaseConnection {
 				else {
 					return new User(lUserObject.get("userEmail").toString(),
 							lUserObject.get("userPassword").toString(),
-							Float.parseFloat(lUserObject.get("userWeight")
+							Integer.parseInt(lUserObject.get("userWeight")
 									.toString()));
 				}
 			}
