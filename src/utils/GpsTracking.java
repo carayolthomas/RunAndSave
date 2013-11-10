@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.hti.LoginActivity;
 import com.hti.MainActivity;
@@ -87,6 +88,7 @@ public class GpsTracking {
 			}
 		} else {
 			Log.e(LogTag.GPS, "GPS OFF");
+			Toast.makeText(LoginActivity.getAppContext(), "GPS OFF, Please check before to run", Toast.LENGTH_LONG).show();
 		}
 		/** flush the buffer every MainActivity.BUFFERSIZE points */
 		if (mGpsWayPoints.size() > MainActivity.BUFFERSIZE) {

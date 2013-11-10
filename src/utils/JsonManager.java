@@ -63,7 +63,7 @@ public class JsonManager {
 		Gson lGson = new Gson();
 		// Subjective choice in the filenale, we could open the wifi file or
 		// create only 1 file
-		Reader lReader = JsonManager.openReader(MainActivity.FILENAMEGPS);
+		Reader lReader = JsonManager.openReader(MainActivity.CONFIG_POSITION);
 		int lNb;
 		try {
 			lNb = lGson.fromJson(lReader, SearchJsonResultRoutes.class).pRoutes
@@ -306,7 +306,7 @@ public class JsonManager {
 		 * Subjective choice in the filenale, we could open the wifi file or
 		 * create only 1 file
 		 */
-		Reader lReader = JsonManager.openReader(MainActivity.FILENAMEGPS);
+		Reader lReader = JsonManager.openReader(MainActivity.CONFIG_POSITION);
 		int lNb;
 		try {
 			lNb = lGson.fromJson(lReader, SearchJsonResultRoutes.class).pRoutes

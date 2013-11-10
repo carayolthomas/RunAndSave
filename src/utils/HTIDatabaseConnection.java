@@ -142,11 +142,17 @@ public class HTIDatabaseConnection {
 	 */
 	public String updateUserWeight(User pUser, int newUserWeight) {
 		DBCollection lUserCollection = mDatabaseInst.getCollection(USERCOLL);
-		return lUserCollection.update(
-				new BasicDBObject("userEmail", pUser.getUserEmail()),
-				new BasicDBObject("userEmail", pUser.getUserEmail()).append(
-						"userPassword", pUser.getUserPassword()).append(
-						"userWeight", newUserWeight)).getError();
+		try {
+			return lUserCollection.update(
+					new BasicDBObject("userEmail", pUser.getUserEmail()),
+					new BasicDBObject("userEmail", pUser.getUserEmail()).append(
+							"userPassword", Encode.encode(pUser.getUserPassword(),
+									HTIDatabaseConnection.CRYPTALGO)).append(
+							"userWeight", newUserWeight)).getError();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -236,7 +242,7 @@ public class HTIDatabaseConnection {
 				.append("rideDuration", pRide.getRideDuration())
 				.append("rideStartTimestamp", pRide.getRideStartTimestamp())
 				.append("rideStopTimestamp", pRide.getRideStopTimestamp())
-				.append("rideUserEmail", pRide.getRideUserEmail())
+				.append("rideUserEmail", MainActivity.userConnected.getUserEmail())
 				.append("rideDate", pRide.getRideDate().toString());
 		return lRideCollection.insert(lNewRide).getError();
 	}
@@ -262,8 +268,8 @@ public class HTIDatabaseConnection {
 				String rideDate = String.valueOf(next.get("rideDate"));
 				lUserRides.add(new Ride(Integer.parseInt(rideId),
 						MainActivity.userConnected.getUserEmail(), Integer
-								.parseInt(rideRouteId), Integer
-								.parseInt(rideCalories), Double
+								.parseInt(rideRouteId), Double
+								.parseDouble(rideCalories), Double
 								.parseDouble(rideDuration), rideDate));
 			}
 		} finally {

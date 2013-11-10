@@ -31,6 +31,9 @@ import android.view.MenuItem;
  */
 public class MainActivity extends FragmentActivity {
 
+	/**Config GPS / WIFI */
+	public static String CONFIG_POSITION;
+	
 	/** The size of the buffer which allow me to store the position of the user */
 	public static final int BUFFERSIZE = 10;
 
@@ -105,6 +108,9 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		/** Set the configuration */
+		CONFIG_POSITION = FILENAMEWIFI;
+		
 		/** Get the User thanks to the Intent */
 		Intent userIntent = getIntent();
 		if (userIntent != null) {
@@ -261,9 +267,9 @@ public class MainActivity extends FragmentActivity {
 		dateStopRunning = new Date();
 		/** handle the new route */
 		if(JsonManager.getRoute(JsonManager
-				.openReader(FILENAMEGPS)) != null) {
+				.openReader(CONFIG_POSITION)) != null) {
 			Route lRouteToSave = JsonManager.getRoute(JsonManager
-					.openReader(FILENAMEGPS)).mRoute;
+					.openReader(CONFIG_POSITION)).mRoute;
 			taskRoute = new SaveRouteInDBTask();
 			taskRoute.execute(lRouteToSave);
 			/** handle the new ride */
