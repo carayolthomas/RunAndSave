@@ -88,7 +88,7 @@ public class GpsTracking {
 			}
 		} else {
 			Log.e(LogTag.GPS, "GPS OFF");
-			Toast.makeText(LoginActivity.getAppContext(), "GPS OFF, Please check before to run", Toast.LENGTH_LONG).show();
+			Toast.makeText(LoginActivity.getAppContext(), "GPS OFF, Please check before running !", Toast.LENGTH_LONG).show();
 		}
 		/** flush the buffer every MainActivity.BUFFERSIZE points */
 		if (mGpsWayPoints.size() > MainActivity.BUFFERSIZE) {

@@ -109,7 +109,7 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 
 		/** Set the configuration */
-		CONFIG_POSITION = FILENAMEWIFI;
+		CONFIG_POSITION = FILENAMEGPS;
 		
 		/** Get the User thanks to the Intent */
 		Intent userIntent = getIntent();
@@ -268,6 +268,7 @@ public class MainActivity extends FragmentActivity {
 		/** handle the new route */
 		if(JsonManager.getRoute(JsonManager
 				.openReader(CONFIG_POSITION)) != null) {
+			RunFragment.createLoadingWaitDialog(MainActivity.runFragment.getActivity(), "Saving route...");
 			Route lRouteToSave = JsonManager.getRoute(JsonManager
 					.openReader(CONFIG_POSITION)).mRoute;
 			taskRoute = new SaveRouteInDBTask();
@@ -311,16 +312,22 @@ public class MainActivity extends FragmentActivity {
 	/**
 	 * AsyncTask save Route in Database
 	 */
-	public static class SaveRouteInDBTask extends AsyncTask<Route, Void, Void> {
+	public static class SaveRouteInDBTask extends AsyncTask<Route, Void, Boolean> {
 		@Override
-		protected Void doInBackground(Route... params) {
+		protected Boolean doInBackground(Route... params) {
 			if (params[0] != null) {
 				params[0].saveRoute();
+				return true;
 			} else {
 				Log.e(LogTag.WRITEDB,
 						"Problem while saving the route in the database, maybe the route is null");
+				return false;
 			}
-			return null;
+		}
+		@Override
+		protected void onPostExecute(final Boolean pSuccess) {
+			/** Cancel the loading dialog */
+			RunFragment.dismissLoadingWaitDialog();
 		}
 	}
 
@@ -351,4 +358,5 @@ public class MainActivity extends FragmentActivity {
 			return null;
 		}
 	}
+	
 }

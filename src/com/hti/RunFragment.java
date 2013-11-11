@@ -1,5 +1,7 @@
 package com.hti;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,6 +21,9 @@ public class RunFragment extends Fragment {
 
 	/** Button run */
 	public View mView;
+	
+	/** View for loading screen */
+	public static ProgressDialog mDialogSavingRoute;
 	
 	/** Button run */
 	public Button mButtonRun;
@@ -56,5 +61,22 @@ public class RunFragment extends Fragment {
 		});
 		
 		return lView;
+	}
+	
+	/**
+	 * Create a dialog view for waiting
+	 * @param pMessage
+	 */
+	public static void createLoadingWaitDialog(Activity pActivity, String pMessage) {
+		mDialogSavingRoute = ProgressDialog.show(pActivity, "", 
+				pMessage, true);
+		mDialogSavingRoute.setCancelable(false);
+	}
+	
+	/**
+	 * Dismiss the loading dialog view
+	 */
+	public static void dismissLoadingWaitDialog() {
+		mDialogSavingRoute.dismiss();
 	}
 }

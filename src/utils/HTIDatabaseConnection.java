@@ -142,17 +142,11 @@ public class HTIDatabaseConnection {
 	 */
 	public String updateUserWeight(User pUser, int newUserWeight) {
 		DBCollection lUserCollection = mDatabaseInst.getCollection(USERCOLL);
-		try {
-			return lUserCollection.update(
-					new BasicDBObject("userEmail", pUser.getUserEmail()),
-					new BasicDBObject("userEmail", pUser.getUserEmail()).append(
-							"userPassword", Encode.encode(pUser.getUserPassword(),
-									HTIDatabaseConnection.CRYPTALGO)).append(
-							"userWeight", newUserWeight)).getError();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
+		BasicDBObject lSet = new BasicDBObject("$set", new BasicDBObject(
+				"userWeight", newUserWeight));
+		return lUserCollection.update(
+				new BasicDBObject("userEmail", pUser.getUserEmail()), lSet)
+				.getError();
 	}
 
 	/**
