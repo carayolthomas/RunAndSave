@@ -1,4 +1,4 @@
-Run & Save
+Run & Save (HTI)
 ===
 This an android application for joggers with GPS tracking.
 It allows the user to keep each Ride he has done and the Route associated to this Ride.
