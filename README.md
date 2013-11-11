@@ -21,3 +21,6 @@ Here the list of functionalities not yet implemented :
   - Compute charts in order to compare different rides with the same route
   - Make an offline option : all the data of the user will be store on his phone in JSON files
   - Possibility of switching between offline & online 
+
+
+TESTED ON NEXUS 4
