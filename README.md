@@ -29,4 +29,5 @@ If you don't wanna run you can use my account :
   - login : carayol.thomas@gmail.com  
   - password : azerty
 
+You can download the apk file here : http://thomascarayol.fr/saverundoc/apk/Hti.apk
 
