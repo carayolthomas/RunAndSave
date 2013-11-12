@@ -24,3 +24,9 @@ Here the list of functionalities not yet implemented :
 
 
 TESTED ON NEXUS 4
+
+If you don't wanna run you can use my account : 
+  - login : carayol.thomas@gmail.com  
+  - password : azerty
+
+
