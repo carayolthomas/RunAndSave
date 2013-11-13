@@ -1,5 +1,8 @@
-Run & Save (HTI)
+Run & Save (HTI) 
 ===
+
+--- TESTED ON NEXUS 4 ---
+
 This an android application for joggers with GPS tracking.
 It allows the user to keep each Ride he has done and the Route associated to this Ride.
 
@@ -13,6 +16,7 @@ Here the list of functionalities tested :
   - Register
   - Start running
   - Stop running
+  - Update your weight in order to compute calories burnt
   - Display all the user rides in a list with details (calories burnt, duration)
   - Display the route on a Google map (Start & Stop spot)
   
@@ -22,8 +26,6 @@ Here the list of functionalities not yet implemented :
   - Make an offline option : all the data of the user will be store on his phone in JSON files
   - Possibility of switching between offline & online 
 
-
-TESTED ON NEXUS 4
 
 If you don't wanna run you can use my account : 
   - login : carayol.thomas@gmail.com  
