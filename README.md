@@ -1,6 +1,8 @@
 Run & Save (HTI) 
 ===
 
+( For more informations : http://thomascarayol.fr/?p=24 )
+
 --- TESTED ON NEXUS 4 ---
 
 This an android application for joggers with GPS tracking.
